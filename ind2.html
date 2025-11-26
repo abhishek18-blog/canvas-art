@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Artisan's Canvas | Handmade Art Portfolio</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Initialize Lucide Icons and Mobile Menu scripts -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Mobile Menu Logic ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true' || false;
+                    mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+                    mobileMenu.style.display = isExpanded ? 'none' : 'block';
+                });
+
+                const mobileLinks = mobileMenu.querySelectorAll('a');
+                mobileLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.style.display = 'none';
+                        mobileMenuButton.setAttribute('aria-expanded', 'false');
+                    });
+                });
+            }
+
+            // --- Fullscreen Image Modal Logic ---
+            const modal = document.getElementById('image-modal');
+            const modalImg = document.getElementById('modal-image');
+            const closeModal = document.getElementById('close-modal');
+            
+            // Select all images inside product cards, featured projects and the hero image
+            const zoomableImages = document.querySelectorAll('.product-card img, .featured-card img, #home img.object-cover');
+
+            zoomableImages.forEach(img => {
+                // Add click listener to open modal
+                img.addEventListener('click', function(e) {
+                    modalImg.src = this.src; // Set modal image to clicked image source
+                    modal.classList.remove('hidden'); // Show modal
+                    modal.classList.add('flex'); // Ensure flex layout for centering
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                });
+            });
+
+            // Function to close modal
+            const hideModal = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = 'auto'; // Restore scrolling
+            };
+
+            // Close on button click
+            if (closeModal) {
+                closeModal.addEventListener('click', hideModal);
+            }
+
+            // Close on background click
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        hideModal();
+                    }
+                });
+            }
+            
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    hideModal();
+                }
+            });
+
+            // --- Category Filter Logic ---
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const categorySections = {
+                'mandala': document.getElementById('mandala'),
+                'bottle': document.getElementById('bottle'),
+                'embroidery': document.getElementById('embroidery'),
+                'warli': document.getElementById('warli'),
+                'giftcards': document.getElementById('giftcards')
+            };
+
+            function setActiveButton(filterValue) {
+                filterButtons.forEach(btn => {
+                    if (btn.getAttribute('data-filter') === filterValue) {
+                        // Active Styles
+                        btn.classList.remove('bg-gray-800', 'text-gray-300');
+                        btn.classList.add('bg-amber-500', 'text-gray-900', 'shadow-lg', 'shadow-amber-500/50');
+                    } else {
+                        // Inactive Styles
+                        btn.classList.add('bg-gray-800', 'text-gray-300');
+                        btn.classList.remove('bg-amber-500', 'text-gray-900', 'shadow-lg', 'shadow-amber-500/50');
+                    }
+                });
+            }
+
+            function filterCategories(filterValue) {
+                for (const [key, section] of Object.entries(categorySections)) {
+                    if (!section) continue;
+                    if (filterValue === 'all' || filterValue === key) {
+                        section.classList.remove('hidden');
+                        // Add a small animation effect
+                        section.animate([
+                            { opacity: 0, transform: 'translateY(20px)' },
+                            { opacity: 1, transform: 'translateY(0)' }
+                        ], { duration: 300, fill: 'forwards' });
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                }
+            }
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const filterValue = btn.getAttribute('data-filter');
+                    setActiveButton(filterValue);
+                    filterCategories(filterValue);
+                });
+            });
+
+            // Handle links from any anchors to auto-filter if needed
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const targetId = this.getAttribute('href').substring(1);
+                    if(categorySections[targetId]) {
+                        setActiveButton(targetId);
+                        filterCategories(targetId);
+                    }
+                });
+            });
+        });
+    </script>
+    
+    <style>
+        /* --- CUSTOM STYLES: PREMIUM DARK THEME --- */
+        
+        body {
+            /* Deep Charcoal background */
+            background-color: #314b83; 
+            color: #F3F4F6; 
+            /* Using the previously uploaded image as background */
+            background-image: url('uploaded:_ (16).jpeg-990c38ba-5445-4491-a6c1-9268895493d4'); 
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+        }
+        
+        .art-primary-text { color: #F9FAFB; }
+        .text-gray-600 { color: #cbd5e1 !important; /* Light blue-gray for descriptions */ }
+
+        /* Accent Color: Luxury Gold */
+        .art-accent { background-color: #fbbf24; }
+        .art-accent-text { color: #fbbf24; }
+        .art-accent-hover:hover { background-color: #d97706; }
+        
+        .shadow-art { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3); }
+        .font-sans { font-family: 'Inter', sans-serif; }
+        
+        .section-title { position: relative; display: inline-block; }
+        .section-title::after {
+            content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: -10px;
+            width: 70px; height: 3px; background-color: #fbbf24; border-radius: 9999px;
+        }
+        
+        .navbar {
+            background-color: rgba(17, 24, 39, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #374151;
+        }
+        
+        .product-card {
+            background-color: #1F2937; border: 1px solid #374151; transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(251, 191, 36, 0.15); border-color: #fbbf24;
+        }
+        
+        /* Indicate that images are clickable */
+        .product-card img, #home img.object-cover, .featured-card img {
+            cursor: zoom-in;
+        }
+        
+        .bg-dark-alt { background-color: #385799; } /* Unified background */
+        .bg-dark-card { background-color: #1F2937; }
+
+        .sold-tag { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #991b1b; }
+        .sold-image { opacity: 0.8; filter: grayscale(100%); }
+        .available-tag { background-color: #14532d; color: #86efac; border: 1px solid #166534; }
+
+        /* Hide scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 navbar shadow-art">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="#home" class="text-2xl font-bold tracking-tight art-primary-text hover:text-amber-400 transition">
+                        The Artisan's Canvas
+                    </a>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                    <a href="#featured" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Featured</a>
+                    <a href="#gallery" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Available Art</a>
+                    <a href="#sold" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Sold Archive</a>
+                    <a href="#about" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">About Us</a>
+                    <a href="#contact" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Contact</a>
+                </div>
+                <div class="flex items-center sm:hidden">
+                    <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="sm:hidden" id="mobile-menu" style="display: none;">
+            <div class="pt-2 pb-3 space-y-1 bg-dark-alt border-t border-gray-700">
+                <a href="#featured" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">Featured</a>
+                <a href="#gallery" class="block pl-3 pr-4 py-2 border-l-4 border-amber-500 text-base font-medium text-white bg-dark-card">Available Art</a>
+                <a href="#sold" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">Sold Archive</a>
+                <a href="#about" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">About Us</a>
+                <a href="#contact" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="py-20 md:py-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="text-center md:text-left">
+                    <span class="text-sm font-semibold uppercase art-accent-text">Handcrafted with Heart</span>
+                    <h1 class="mt-4 text-5xl md:text-6xl font-extrabold tracking-tight art-primary-text">
+                        Browse Our Exclusive <span class="art-accent-text">Art Collection</span>
+                    </h1>
+                    <p class="mt-6 text-xl leading-relaxed text-gray-400">
+                        Explore a curated collection of authentic, handmade creations—each piece ready to transform your space or make the perfect, unique gift.
+                    </p>
+                    <div class="mt-8 flex justify-center md:justify-start space-x-4">
+                        <a href="#gallery" class="art-accent art-accent-hover text-gray-900 font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl">
+                            Shop Current Inventory
+                        </a>
+                    </div>
+                </div>
+                <!-- Hero Image -->
+                <div class="hidden md:block relative group">
+                    <img src="photos/artisanbg.jpeg" 
+                         alt="Creative Showcase" 
+                         class="w-full h-full object-cover rounded-3xl shadow-art border border-gray-700">
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Projects Sliding Section -->
+        <section id="featured" class="py-16 bg-[#111827] border-t border-b border-gray-800 relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-end mb-10">
+                    <div>
+                        <span class="text-amber-400 font-semibold tracking-wide uppercase text-sm">Showcase</span>
+                        <h2 class="text-3xl md:text-4xl font-bold text-white mt-2">Featured Projects</h2>
+                    </div>
+                    <!-- Navigation Buttons for Slider -->
+                    <div class="hidden md:flex space-x-3">
+                        <button id="slide-left" class="p-2 rounded-full bg-gray-800 border border-gray-600 text-white hover:bg-amber-500 hover:border-amber-500 hover:text-gray-900 transition duration-300">
+                            <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                        </button>
+                        <button id="slide-right" class="p-2 rounded-full bg-gray-800 border border-gray-600 text-white hover:bg-amber-500 hover:border-amber-500 hover:text-gray-900 transition duration-300">
+                            <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Horizontal Slider -->
+                <div id="project-slider" class="flex overflow-x-auto space-x-6 pb-8 scroll-smooth no-scrollbar snap-x snap-mandatory">
+                    <!-- Project Cards (Content unchanged from previous version) -->
+                    <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[30%] snap-center bg-dark-card rounded-2xl overflow-hidden shadow-lg border border-gray-700 featured-card transition transform hover:-translate-y-2 hover:shadow-2xl">
+                        <div class="relative h-64">
+                            <img src="photos/m1.jpeg" alt="Project 1" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-4 left-4">
+                                <span class="text-xs font-bold bg-amber-500 text-gray-900 px-2 py-1 rounded">Mandala</span>
+                                <h3 class="text-xl font-bold text-white mt-1">Floral geometric art</h3>
+                            </div>
+                        </div>
+                        <div class="p-5"><p class="text-gray-400 text-sm">"Intricate mandala art featuring layered geometric patterns and floral motifs"</p></div>
+                    </div>
+                    <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[30%] snap-center bg-dark-card rounded-2xl overflow-hidden shadow-lg border border-gray-700 featured-card transition transform hover:-translate-y-2 hover:shadow-2xl">
+                        <div class="relative h-64">
+                            <img src="photos/Bottle Art.jpeg" alt="Project 2" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-4 left-4">
+                                <span class="text-xs font-bold bg-blue-500 text-white px-2 py-1 rounded">Bottle Art</span>
+                                <h3 class="text-xl font-bold text-white mt-1">Sunset bottle art</h3>
+                            </div>
+                        </div>
+                        <div class="p-5"><p class="text-gray-400 text-sm">"Painted glass bottle featuring sunset gradient with silhouette tree design"</p></div>
+                    </div>
+
+
+                     <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[30%] snap-center bg-dark-card rounded-2xl overflow-hidden shadow-lg border border-gray-700 featured-card transition transform hover:-translate-y-2 hover:shadow-2xl">
+                        <div class="relative h-64">
+                            <img src="photos/e1.jpeg" alt="Project 3" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-4 left-4">
+                                <span class="text-xs font-bold bg-green-600 text-white px-2 py-1 rounded">Embroidery</span>
+                                <h3 class="text-xl font-bold text-white mt-1">Vintage style embroidered flowers</h3>
+                            </div>
+                        </div>
+                        <div class="p-5"><p class="text-gray-400 text-sm">"Delicate hand embroidery: Vintage-inspired floral arrangement in soft tones"</p></div>
+                    </div>
+
+                    
+                    <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[30%] snap-center bg-dark-card rounded-2xl overflow-hidden shadow-lg border border-gray-700 featured-card transition transform hover:-translate-y-2 hover:shadow-2xl">
+                        <div class="relative h-64">
+                            <img src="photos/w1.jpeg" alt="Project 4" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div class="absolute bottom-4 left-4">
+                                <span class="text-xs font-bold bg-red-600 text-white px-2 py-1 rounded">Warli</span>
+                                <h3 class="text-xl font-bold text-white mt-1">Village Mural</h3>
+                            </div>
+                        </div>
+                        <div class="p-5"><p class="text-gray-400 text-sm">"The Heartbeat of Culture: Celebrating Music and Tradition in Warli Style"</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+
+        <!-- Gallery Section with Distinct Categories -->
+        <section id="gallery" class="py-20 bg-[#111827] border-t border-b border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-4xl font-bold text-center section-title mb-8 art-primary-text">Available Art by Category</h2>
+                
+                <!-- Filter Buttons -->
+                <div class="flex flex-wrap justify-center gap-4 mb-12">
+                    <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-amber-500 text-gray-900 shadow-lg shadow-amber-500/50" data-filter="all">All</button>
+                    <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="mandala">Mandala</button>
+                    <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="bottle">Bottle Art</button>
+                    <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="embroidery">Embroidery</button>
+                    <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="warli">Warli Art</button>
+                    <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="giftcards">Gift Cards</button>
+                </div>
+
+                <!-- === MANDALA SECTION (BG: #111827) === -->
+                <div id="mandala" class="mb-20 pt-10 border-t-2 border-amber-500/50 transition-all duration-500 bg-[#111827] p-6 rounded-3xl">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <span class="p-2 bg-amber-500 rounded-lg text-gray-900"><i data-lucide="circle-dot"></i></span>
+                        <h3 class="text-3xl font-bold art-primary-text">Mandala Art Collection</h3>
+                    </div>
+                    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Mandala 1 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="photos/mandala2.jpeg" alt="Mandala" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">The Balanced Universe</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Mandala 2 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="photos/mandala.jpeg" alt="Mandala" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Cosmic Wheel</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Mandala 3 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/111827/fbbf24?text=Golden+Lotus" alt="Mandala" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Golden Lotus</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Mandala 4 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/374151/fbbf24?text=Serenity+Spiral" alt="Mandala" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Serenity Spiral</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Mandala 5 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/4b5563/fbbf24?text=Eternal+Circle" alt="Mandala" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Eternal Circle</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- === BOTTLE ART SECTION (BG: #111827) === -->
+                <div id="bottle" class="mb-20 pt-10 border-t-2 border-amber-500/50 transition-all duration-500 bg-[#111827] p-6 rounded-3xl">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <span class="p-2 bg-amber-500 rounded-lg text-gray-900"><i data-lucide="bottle"></i></span>
+                        <h3 class="text-3xl font-bold art-primary-text">Bottle & Dot Painting</h3>
+                    </div>
+                    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Bottle 1 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="photos/bot3.jpeg" alt="Dot Bottle" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Turquoise Energy Vessel</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Bottle 2 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="photos/bot1.jpeg" alt="Dot Bottle" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Sunset Gradient Bottle</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Bottle 3 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="photos/bot2.jpeg" alt="Dot Bottle" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Emerald Dotwork</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Bottle 4 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/374151/fbbf24?text=Midnight+Blue" alt="Dot Bottle" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Midnight Blue Vase</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Bottle 5 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/4b5563/fbbf24?text=Crimson+Waves" alt="Dot Bottle" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Crimson Waves</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- === EMBROIDERY SECTION (BG: #111827) === -->
+                <div id="embroidery" class="mb-20 pt-10 border-t-2 border-amber-500/50 transition-all duration-500 bg-[#111827] p-6 rounded-3xl">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <span class="p-2 bg-amber-500 rounded-lg text-gray-900"><i data-lucide="needle"></i></span>
+                        <h3 class="text-3xl font-bold art-primary-text">Embroidery Collection</h3>
+                    </div>
+                    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Embroidery 1 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/1f2937/fbbf24?text=Botanical+Hoop" alt="Embroidery" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Botanical Study Hoop</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Embroidery 2 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/252f3f/fbbf24?text=Floral+Wreath" alt="Embroidery" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Spring Floral Wreath</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Embroidery 3 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/111827/fbbf24?text=Monogram" alt="Embroidery" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Custom Monogram</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Embroidery 4 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/374151/fbbf24?text=Landscape" alt="Embroidery" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Mountain Landscape</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Embroidery 5 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/4b5563/fbbf24?text=Abstract+Threads" alt="Embroidery" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Abstract Threads</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- === WARLI ART SECTION (BG: #111827) === -->
+                <div id="warli" class="mb-20 pt-10 border-t-2 border-amber-500/50 transition-all duration-500 bg-[#111827] p-6 rounded-3xl">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <span class="p-2 bg-amber-500 rounded-lg text-gray-900"><i data-lucide="paintbrush"></i></span>
+                        <h3 class="text-3xl font-bold art-primary-text">Warli Painting Collection</h3>
+                    </div>
+                    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Warli 1 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="photos/warliReady.jpeg" alt="Warli" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Tribal Dance</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Warli 2 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/252f3f/fbbf24?text=Harvest+Festival" alt="Warli" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Harvest Festival</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Warli 3 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/111827/fbbf24?text=Village+Life" alt="Warli" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Village Life</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Warli 4 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/374151/fbbf24?text=Tree+of+Life" alt="Warli" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Tree of Life</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Warli 5 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/4b5563/fbbf24?text=Wedding+Circle" alt="Warli" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Wedding Circle</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- === GIFT CARDS SECTION (BG: #111827) === -->
+                <div id="giftcards" class="mb-20 pt-10 border-t-2 border-amber-500/50 transition-all duration-500 bg-[#111827] p-6 rounded-3xl">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <span class="p-2 bg-amber-500 rounded-lg text-gray-900"><i data-lucide="gift"></i></span>
+                        <h3 class="text-3xl font-bold art-primary-text">Birthday Gift Cards</h3>
+                    </div>
+                    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Gift Card 1 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="photos/cric.jpeg" alt="Gift Card" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Classic Birthday</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Gift Card 2 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="photos/bday1.jpeg" alt="Gift Card" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Celebration Vibes</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Gift Card 3 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="photos/bday2.jpeg" alt="Gift Card" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Artistic Wishes</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Gift Card 4 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/374151/fbbf24?text=Modern+Abstract" alt="Gift Card" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Modern Abstract</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Gift Card 5 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/4b5563/fbbf24?text=Floral+Love" alt="Gift Card" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Floral Love</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- === SOLD PIECES SHOWCASE SECTION (BG: #111827) === -->
+                <div id="sold" class="pt-10 border-t-2 border-amber-500/50 bg-[#111827] p-6 rounded-3xl">
+                    <h2 class="text-4xl font-bold text-center section-title mb-4 art-primary-text">Showcase of Sold Commissions</h2>
+                    <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+                        These artworks have found their homes, but they serve as inspiration! Click below to commission a similar piece.
+                    </p>
+
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        
+                        <!-- 4. SOLD: Dot Painting -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 sold-tag font-bold text-xs rounded-full shadow-md z-10">SOLD</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/374151/fbbf24?text=Sunrise+Decanter" alt="Sold Dot Bottle" class="w-full h-full object-cover sold-image">
+                            </div>
+                            <div class="p-5 text-center">
+                                <span class="text-xs font-bold uppercase tracking-wider text-red-400">Dot Painting | Bottle Art</span>
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Sunrise Glow Decanter</h4>
+                                <a href="#contact" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="sparkles" class="w-4 h-4"></i><span>Looking for a similar piece?</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- 5. SOLD: Mandala Art -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 sold-tag font-bold text-xs rounded-full shadow-md z-10">SOLD</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/374151/fbbf24?text=Deep+Ocean+Flow" alt="Sold Mandala" class="w-full h-full object-cover sold-image">
+                            </div>
+                            <div class="p-5 text-center">
+                                <span class="text-xs font-bold uppercase tracking-wider text-red-400">Mandala Art</span>
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Deep Ocean Flow</h4>
+                                <a href="#contact" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="sparkles" class="w-4 h-4"></i><span>Looking for a similar piece?</span>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- 6. SOLD: Warli Painting -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 sold-tag font-bold text-xs rounded-full shadow-md z-10">SOLD</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/374151/fbbf24?text=Village+Unity+Story" alt="Sold Warli" class="w-full h-full object-cover sold-image">
+                            </div>
+                            <div class="p-5 text-center">
+                                <span class="text-xs font-bold uppercase tracking-wider text-red-400">Warli Original</span>
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Village Unity Story</h4>
+                                <a href="#contact" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="sparkles" class="w-4 h-4"></i><span>Looking for a similar piece?</span>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Us Section -->
+        <section id="about" class="py-20 bg-[#111827] border-t border-b border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="order-2 md:order-1 relative group">
+                        <!-- TODO: Change this image URL to your own image -->
+                        <img src="https://placehold.co/600x400/1f2937/fbbf24?text=Artist%27s+Studio" alt="Studio" class="w-full h-80 object-cover rounded-3xl shadow-art border border-gray-700">
+                    </div>
+                    <div class="order-1 md:order-2">
+                        <h2 class="text-4xl font-bold section-title mb-8 art-primary-text md:text-left text-center">Our Mission</h2>
+                        <p class="text-lg mb-6 text-gray-400">The Artisan's Canvas was founded on a simple belief: “To celebrate and preserve the beauty of handcrafted art by connecting skilled artisans and passionate art lovers. We strive to inspire creativity, honor tradition, and bring unique, meaningful creations into everyday life.”</p>
+                        <p class="text-lg italic art-accent-text">"Art is not what you see, but what you make others see.” – Edgar Degas</p>
+                        <a href="#contact" class="mt-6 inline-flex bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-full shadow-md transition duration-300">Meet the Creator</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20">
+            <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-4xl font-bold text-center section-title mb-16 art-primary-text">Get a Custom Quote</h2>
+                <div class="bg-dark-card p-8 md:p-12 rounded-2xl shadow-art border border-gray-700 text-center space-y-8">
+                    <h3 class="text-2xl font-bold art-primary-text">Pricing & Custom Orders</h3>
+                    <p class="text-gray-400">Since our art is entirely handmade, pricing varies based on complexity, size, and materials. Please reach out to discuss your interest in an available piece or to start a custom commission!</p>
+                    
+
+                <!---------------phone and email----------------------->
+                    <div class="justify-center pt-4 border-t border-gray-700 flex flex-col items-center">
+                        <span class="text-xl font-semibold text-gray-200">Email Address   </span>
+
+                        <div class="flex items-center justify-center space-x-4 mb-3">
+
+                            <!-- <i data-lucide="mail" class="w-8 h-8 art-accent-text"></i> -->
+                        </div>
+                        <a href="mailto:artisancanvas26@gmail.com" class="text-2xl font-bold text-amber-400 hover:text-amber-300 transition duration-300 inline-block p-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 max-w-full break-words">artisancanvas26@gmail.com</a>
+                    </div>
+                    
+                    <div class=" pt-4 border-t border-gray-700 flex flex-col items-center">
+                                                    <span class="flex justify-center text-xl font-semibold text-gray-200">Phone No. / WhatsApp</span>
+
+                        <div class="flex items-center justify-center space-x-4 mb-3">
+                            <!-- <i data-lucide="phone" class="w-8 h-8 art-accent-text"></i> -->
+                        </div>
+                        <a href="tel:+91 9022290311" class="text-2xl font-bold text-amber-400 hover:text-amber-300 transition duration-300 inline-block p-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700">+91 9022290311</a>
+                        <a href="tel:+91 7798838875" class="text-2xl font-bold text-amber-400 hover:text-amber-300 transition duration-300 inline-block p-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700">+91 7798838875</a>
+
+                    </div>
+
+                    <!-- NEW SOCIAL SECTION -->
+                    <div class="pt-4 border-t border-gray-700 flex flex-col items-center">
+                        <span class="text-xl font-semibold text-gray-200 mb-4">Connect With Us</span>
+                        <div class="flex justify-center space-x-8">
+                            
+                            <!-- Instagram -->
+                            <a href="https://www.instagram.com/artisanscanvas4/" aria-label="Instagram" class="flex flex-col items-center group">
+                                <!-- TODO: Replace 'src' with your local icon path (e.g., 'icons/instagram.png') -->
+                                <img src="photos/insta.png " 
+                                     alt="Instagram" 
+                                     class="w-12 h-12 object-contain hover:scale-110 transition duration-300">
+                                <span class="mt-2 text-sm text-gray-400 group-hover:text-[#E1306C]">Instagram</span>
+                            </a>
+
+                            <!-- LinkedIn -->
+                            <a href="https" aria-label="LinkedIn" class="flex flex-col items-center group">
+                                <!-- TODO: Replace 'src' with your local icon path (e.g., 'icons/linkedin.png') -->
+                                <img src="photos/link.png" 
+                                     alt="LinkedIn" 
+                                     class="w-12 h-12 object-contain hover:scale-110 transition duration-300">
+                                <span class="mt-2 text-sm text-gray-400 group-hover:text-[#0A66C2]">LinkedIn</span>
+                            </a>
+
+                            <!-- Email -->
+                             <a href="mailto:artisancanvas26@gmail.com" aria-label="Email" class="flex flex-col items-center group">
+                                <!-- TODO: Replace 'src' with your local icon path (e.g., 'icons/email.png') -->
+                                <img src="photos/gmail.png" 
+                                     alt="Email" 
+                                     class="w-12 h-12 object-contain hover:scale-110 transition duration-300">
+                                <span class="mt-2 text-sm text-gray-400 group-hover:text-amber-400">Email</span>
+                            </a>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Fullscreen Image Modal -->
+    <div id="image-modal" class="fixed inset-0 z-[60] hidden bg-black/90 flex items-center justify-center p-4">
+        <button id="close-modal" class="absolute top-4 right-4 text-white hover:text-amber-400 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <img id="modal-image" src="" alt="Full View" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl border border-gray-700">
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+                <div class="text-center md:text-left">
+                    <p class="text-lg font-semibold mb-1">The Artisan's Canvas</p>
+                    <p class="text-sm text-gray-400">Handmade Artistry, Since Nov 2025</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" aria-label="Instagram" class="text-gray-400 hover:text-amber-400 transition duration-300"><i data-lucide="instagram" class="w-6 h-6"></i></a>
+                    <a href="#" aria-label="Facebook" class="text-gray-400 hover:text-amber-400 transition duration-300"><i data-lucide="facebook" class="w-6 h-6"></i></a>
+                    <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-amber-400 transition duration-300"><i data-lucide="linkedin" class="w-6 h-6"></i></a>
+                    <a href="#contact" aria-label="Email" class="text-gray-400 hover:text-amber-400 transition duration-300"><i data-lucide="mail" class="w-6 h-6"></i></a>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center">
+                <p class="text-xs text-gray-500">&copy; 2025 The Artisan's Canvas. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
