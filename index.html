@@ -89,7 +89,10 @@
                 'bottle': document.getElementById('bottle'),
                 'embroidery': document.getElementById('embroidery'),
                 'warli': document.getElementById('warli'),
-                'giftcards': document.getElementById('giftcards')
+                'giftcards': document.getElementById('giftcards'),
+                 'lippan': document.getElementById('lippan'),
+                'frames': document.getElementById('frames'),
+                'others': document.getElementById('others')
             };
 
             function setActiveButton(filterValue) {
@@ -220,6 +223,7 @@
                     <a href="#sold" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Sold Archive</a>
                     <a href="#about" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">About Us</a>
                     <a href="#contact" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Contact</a>
+                    
                 </div>
                 <div class="flex items-center sm:hidden">
                     <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500" aria-controls="mobile-menu" aria-expanded="false">
@@ -356,6 +360,11 @@
                     <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="embroidery">Embroidery</button>
                     <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="warli">Warli Art</button>
                     <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="giftcards">Handcrafted Gift Cards</button>
+                    <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="lippan">Lippan Art</button>
+                    <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="frames">Photo Frames</button>
+                    <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="others">Others</button>
+
+
                 </div>
 
                 <!-- === MANDALA SECTION (BG: #111827) === -->
@@ -734,12 +743,252 @@
                     </div>
                 </div>
 
-                <!-- === SOLD PIECES SHOWCASE SECTION (BG: #111827) === -->
-                <div id="sold" class="pt-10 border-t-2 border-amber-500/50 bg-[#111827] p-6 rounded-3xl">
-                    <h2 class="text-4xl font-bold text-center section-title mb-4 art-primary-text">Showcase of Sold Commissions</h2>
-                    <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
-                        These artworks have found their homes, but they serve as inspiration! Click below to commission a similar piece.
-                    </p>
+   <!-- === LIPPAN ART SECTION (BG: #111827) === -->
+                <div id="lippan" class="mb-20 pt-10 border-t-2 border-amber-500/50 transition-all duration-500 bg-[#111827] p-6 rounded-3xl">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <span class="p-2 bg-amber-500 rounded-lg text-gray-900"><i data-lucide="layout-grid"></i></span>
+                        <h3 class="text-3xl font-bold art-primary-text">Lippan Art Collection</h3>
+                    </div>
+                    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Lippan 1 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/1f2937/fbbf24?text=Mud+Mirror+Art" alt="Lippan" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Mud Mirror Art</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Lippan 2 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/252f3f/fbbf24?text=Peacock+Design" alt="Lippan" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Peacock Design</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Lippan 3 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/111827/fbbf24?text=Geometric+Clay" alt="Lippan" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Geometric Clay</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Lippan 4 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/374151/fbbf24?text=Traditional+Kutch" alt="Lippan" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Traditional Kutch</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                         <!-- Lippan 5 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/4b5563/fbbf24?text=Flower+Motif" alt="Lippan" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Flower Motif</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- === DIGITAL FRAMES SECTION (BG: #2c4579) === -->
+                <div id="frames" class="mb-20 pt-10 border-t-2 border-amber-500/50 transition-all duration-500 bg-[#111827] p-6 rounded-3xl">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <span class="p-2 bg-amber-500 rounded-lg text-gray-900"><i data-lucide="image"></i></span>
+                        <h3 class="text-3xl font-bold art-primary-text">Digital Photo Frames</h3>
+                    </div>
+                    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Frame 1 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/1f2937/fbbf24?text=Smart+Frame" alt="Frame" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Smart Memory Frame</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Frame 2 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/252f3f/fbbf24?text=Collage+Frame" alt="Frame" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Custom Collage Frame</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                         <!-- Frame 3 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/111827/fbbf24?text=LED+Frame" alt="Frame" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Illuminated LED Frame</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                         <!-- Frame 4 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/374151/fbbf24?text=Wood+Finish" alt="Frame" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Rustic Wood Finish</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                         <!-- Frame 5 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/4b5563/fbbf24?text=Minimalist" alt="Frame" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Minimalist White</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+ <!-- === OTHERS SECTION (BG: #111827) === -->
+                <div id="others" class="mb-20 pt-10 border-t-2 border-amber-500/50 transition-all duration-500 bg-[#111827] p-6 rounded-3xl">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <span class="p-2 bg-amber-500 rounded-lg text-gray-900"><i data-lucide="layers"></i></span>
+                        <h3 class="text-3xl font-bold art-primary-text">Other Artistic Creations</h3>
+                    </div>
+                    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Other 1 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/1f2937/fbbf24?text=Keychains" alt="Other" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Resin Keychains</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Other 2 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/252f3f/fbbf24?text=Bookmarks" alt="Other" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Hand-painted Bookmarks</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Other 3 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/111827/fbbf24?text=Coasters" alt="Other" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Artistic Coasters</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Other 4 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/374151/fbbf24?text=Fridge+Magnets" alt="Other" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Fridge Magnets</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Other 5 -->
+                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
+                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
+                            <div class="relative h-80">
+                                <img src="https://placehold.co/600x400/4b5563/fbbf24?text=Tote+Bags" alt="Other" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Painted Tote Bags</h4>
+                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
+                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Quote</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- === SOLD PIECES SHOWCASE SECTION (BG: #111827) === -->
+<div id="sold" class="pt-10 border-t-2 border-amber-500/50 bg-[#111827] p-6 rounded-3xl">
+    <h2 class="text-4xl font-bold text-center section-title mb-4 art-primary-text">Showcase of Sold Commissions</h2>
+    <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+        These artworks have found their homes, but they serve as inspiration! Click below to commission a similar piece.
+    </p>
+</div>
+
 
                     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         
@@ -810,6 +1059,17 @@
                 </div>
             </div>
         </section>
+
+
+        <!-- Digital Canva Photo Frames -->
+
+        
+
+
+
+
+
+
 
         <!-- Contact Section -->
         <section id="contact" class="py-20">
