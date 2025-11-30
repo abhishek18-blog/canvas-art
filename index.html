@@ -1543,7 +1543,7 @@
     </div>
 
 <!-- ========================================== -->
-<!-- PAYMENT MODAL: STANDARD COMPLIANT MODE V4 -->
+<!-- PAYMENT MODAL: QR & SCANNER ONLY -->
 <!-- ========================================== -->
 
 <!-- Load QR Scanner Library -->
@@ -1560,46 +1560,17 @@
         <h3 class="text-2xl font-bold text-white mb-1 mt-2">Pay via UPI</h3>
         <p class="text-gray-400 text-xs mb-4">Paying: <span id="payee-name-display" class="text-amber-400">...</span></p>
         
-        <!-- SECTION 1: Static QR & Buttons View -->
+        <!-- SECTION 1: Static QR View -->
         <div id="static-qr-view" class="w-full flex flex-col items-center">
             
             <!-- QR CODE IMAGE -->
-            <div class="bg-white p-2 rounded-lg mb-2 w-48 h-48 flex items-center justify-center shadow-lg ring-4 ring-white/10">
+            <div class="bg-white p-2 rounded-lg mb-4 w-56 h-56 flex items-center justify-center shadow-lg ring-4 ring-white/10">
                 <!-- ⬇️ REPLACE THIS IMAGE SOURCE ⬇️ -->
                 <img src="your-upi-qr-code.png" alt="Payment QR Code" class="w-full h-full object-contain">
             </div>
             
-            <p class="text-gray-400 text-xs text-center mb-4">Scan with any UPI App</p>
-
-            <!-- Divider -->
-            <div class="flex items-center w-full gap-2 mb-4">
-                <div class="h-px bg-gray-700 flex-1"></div>
-                <span class="text-gray-500 text-[10px] font-bold tracking-wider">OR TAP TO PAY</span>
-                <div class="h-px bg-gray-700 flex-1"></div>
-            </div>
-
-            <!-- DIRECT APP BUTTONS -->
-            <div class="grid grid-cols-2 gap-3 w-full mb-2">
-                <!-- GPay -->
-                <a id="btn-gpay" href="#" class="bg-[#1F2937] border border-gray-600 hover:border-green-500 hover:bg-gray-800 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all group">
-                    <span class="text-sm font-bold group-hover:text-green-400">GPay</span>
-                </a>
-                <!-- PhonePe -->
-                <a id="btn-phonepe" href="#" class="bg-[#1F2937] border border-gray-600 hover:border-[#5f259f] hover:bg-gray-800 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all group">
-                    <span class="text-sm font-bold group-hover:text-[#5f259f]">PhonePe</span>
-                </a>
-                <!-- Paytm -->
-                <a id="btn-paytm" href="#" class="bg-[#1F2937] border border-gray-600 hover:border-[#00b9f1] hover:bg-gray-800 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all group">
-                    <span class="text-sm font-bold group-hover:text-[#00b9f1]">Paytm</span>
-                </a>
-                <!-- BHIM / Other -->
-                <a id="btn-bhim" href="#" class="bg-[#1F2937] border border-gray-600 hover:border-orange-500 hover:bg-gray-800 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all group">
-                    <span class="text-sm font-bold group-hover:text-orange-500">Other</span>
-                </a>
-            </div>
-
-            <p class="text-[10px] text-gray-500 text-center mb-4 italic">
-                Secure P2P Transaction
+            <p class="text-gray-400 text-sm text-center mb-6">
+                Scan this QR code using any UPI App<br>to complete your payment.
             </p>
 
             <!-- SCANNER TOGGLE BUTTON -->
@@ -1659,73 +1630,20 @@
     // ⬇️ CONFIGURATION ⬇️
     // ==========================================
     const UPI_CONFIG = {
-        vpa: 'deshmukhabhishek370@oksbi',         // 1. REPLACE with your UPI ID
-        name: 'Abhishek Vasant Deshmukh',  // 2. REPLACE with your Name
-        amount: '',                  // 3. LEAVE EMPTY for manual amount
-        currency: 'INR'
+        name: 'Artisans Canvas'  // 1. Display Name
     };
     // ==========================================
 
     document.addEventListener('DOMContentLoaded', () => {
         // --- 1. SETUP DATA ---
         const nameDisplay = document.getElementById('payee-name-display');
-        const safeVPA = UPI_CONFIG.vpa.trim().toLowerCase();
         
-        // Sanitize name: Remove special chars that might break the UPI String
-        // Only alphanumeric and spaces are generally safe for 'pn'
-        const safeName = UPI_CONFIG.name.trim().replace(/[^\w\s]/gi, '');
+        // Sanitize name for display
+        const safeName = UPI_CONFIG.name.trim();
         
-        if(nameDisplay) nameDisplay.textContent = UPI_CONFIG.name;
+        if(nameDisplay) nameDisplay.textContent = safeName;
 
-        // --- 2. LINK GENERATION LOGIC ---
-        // RESTORED: 'pn' (Name) is REQUIRED by UPI spec. Removing it can cause validation errors.
-        // RESTORED: 'tn' (Note) set to 'Pay' as some banks require a note.
-        // NEW: 'mode=00' explicitly defines this as a P2P transaction to avoid Merchant Limit errors.
-        let paymentQuery = `?pa=${safeVPA}&pn=${encodeURIComponent(safeName)}&tn=Pay&cu=${UPI_CONFIG.currency}&mode=00`;
-        
-        // Add Amount only if specified
-        if (UPI_CONFIG.amount && UPI_CONFIG.amount.trim() !== '') {
-            const safeAmount = parseFloat(UPI_CONFIG.amount).toFixed(2);
-            paymentQuery += `&am=${safeAmount}`;
-        }
-
-        // DETECT DEVICE TYPE
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-        // --- 3. CONFIGURE BUTTONS ---
-        const apps = {
-            gpay: { 
-                id: 'btn-gpay',
-                // Android: Use the 'paisa.user' package. 
-                // CRITICAL: We pass the FULL query including 'mode=00' and 'pn'.
-                href: isIOS 
-                    ? `upi://pay${paymentQuery}` 
-                    : `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=https://pay.google.com;end`
-            },
-            phonepe: { 
-                id: 'btn-phonepe', 
-                href: isIOS 
-                    ? `upi://pay${paymentQuery}` 
-                    : `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.phonepe.app;S.browser_fallback_url=https://phonepe.com;end`
-            },
-            paytm: { 
-                id: 'btn-paytm', 
-                href: isIOS 
-                    ? `upi://pay${paymentQuery}` 
-                    : `intent://pay${paymentQuery}#Intent;scheme=upi;package=net.one97.paytm;S.browser_fallback_url=https://paytm.com;end`
-            },
-            bhim: { 
-                id: 'btn-bhim', 
-                href: `upi://pay${paymentQuery}` 
-            }
-        };
-
-        Object.values(apps).forEach(app => {
-            const btn = document.getElementById(app.id);
-            if (btn) btn.setAttribute('href', app.href);
-        });
-
-        // --- 4. SCANNER & MODAL LOGIC (Standard) ---
+        // --- 2. SCANNER & MODAL LOGIC ---
         const modal = document.getElementById('payment-modal');
         const closeBtn = document.getElementById('close-payment-modal');
         const staticView = document.getElementById('static-qr-view');
@@ -1861,7 +1779,6 @@
         }
     });
 </script>
-
 
     
     <!---footer--->
