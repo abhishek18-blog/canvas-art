@@ -1570,7 +1570,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wallet"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 1-1 1v2a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V7h15"/></svg>
             </div>
             <h3 class="text-2xl font-bold text-white mb-2">Pay via UPI</h3>
-            <p class="text-gray-400 text-sm mb-6">Paying to Artisan's Canvas<span id="payee-name-display" class="text-amber-400 font-bold">...</span></p>
+            <p class="text-gray-400 text-sm mb-6">Paying to <span id="payee-name-display" class="text-amber-400 font-bold">...</span></p>
             
             <div class="space-y-3 mb-6">
                 <!-- PhonePe -->
@@ -1610,13 +1610,15 @@
     // ==========================================
     // ⬇️ EDIT THIS SECTION ONLY ⬇️
     // ==========================================
-    const UPI_CONFIG = {
+
+      const UPI_CONFIG = {
         vpa: 'deshmukhabhishek370@oksbi',         // REPLACE with your UPI ID
-        name: 'Abhishek Deshmukh',  // REPLACE with your Name
+        name: 'Artisans Canvas',  // REPLACE with your Name
         amount: '0.00',              // REPLACE with amount (Must be string)
-        currency: 'INR',
-        bank: 'State Bank Of India'
+        currency: 'INR'
     };
+
+    
     // ==========================================
     // ⬆️ END OF EDIT SECTION ⬆️
     // ==========================================
@@ -1625,41 +1627,40 @@
         // 1. Sanitize Inputs
         const safeVPA = UPI_CONFIG.vpa.trim().toLowerCase();
         const safeName = UPI_CONFIG.name.trim();
-        // Ensure amount has 2 decimal places (Google Pay Requirement)
         const safeAmount = parseFloat(UPI_CONFIG.amount).toFixed(2); 
 
         document.getElementById('payee-name-display').textContent = safeName;
 
-        // 2. Construct the Payment Query String
-        // This is the "filling" of the sandwich. Without this, the app opens empty.
-        const paymentQuery = `?pa=${safeVPA}&pn=${encodeURIComponent(safeName)}&am=${safeAmount}&cu=${UPI_CONFIG.currency}`;
+        // 2. Generate Random Transaction ID (Crucial for GPay success)
+        // Helps avoid "Duplicate Transaction" errors and makes the request look valid
+        const tr = Math.floor(Math.random() * 100000000); 
 
-        // 3. Define App Packages
+        // 3. Construct the Base Query
+        // Added 'tn' (Transaction Note) and 'tr' (Transaction Ref)
+        const paymentQuery = `?pa=${safeVPA}&pn=${encodeURIComponent(safeName)}&am=${safeAmount}&cu=${UPI_CONFIG.currency}&tn=Payment&tr=${tr}`;
+
+        // 4. Define App Packages
         const apps = {
             phonepe: {
                 id: 'btn-phonepe',
-                // Standard Intent
                 href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.phonepe.app;S.browser_fallback_url=https://phonepe.com;end`
             },
             paytm: {
                 id: 'btn-paytm',
-                // Standard Intent
                 href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=net.one97.paytm;S.browser_fallback_url=https://paytm.com;end`
             },
             gpay: {
                 id: 'btn-gpay',
-                // Google Pay often prefers the raw UPI link format on newer Androids if Intent fails
-                // But we will stick to the intent that includes the query parameters correctly.
-                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=https://pay.google.com;end`
+                // FIX: Added S.pn and S.tn to FORCE the name and note into the app
+                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.pn=${safeName};S.tn=Payment;S.browser_fallback_url=https://pay.google.com;end`
             },
             bhim: {
                 id: 'btn-bhim',
-                // Generic Universal Link (Works on almost all phones if specific apps fail)
                 href: `upi://pay${paymentQuery}`
             }
         };
 
-        // 4. Update Links
+        // 5. Update Links
         Object.values(apps).forEach(app => {
             const linkElement = document.getElementById(app.id);
             if (linkElement) {
@@ -1667,7 +1668,7 @@
             }
         });
 
-        // 5. Modal Logic
+        // 6. Modal Logic
         const closeBtn = document.getElementById('close-payment-modal');
         const modal = document.getElementById('payment-modal');
         
@@ -1684,12 +1685,6 @@
         }
     });
 </script>
-
-
-
-
-
-
 
 
 
