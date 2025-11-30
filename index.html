@@ -1541,8 +1541,10 @@
         </button>
         <img id="modal-image" src="" alt="Full View" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl border border-gray-700">
     </div>
+
+
 <!-- ========================================== -->
-<!-- PAYMENT MODAL: SAFE MODE (P2P Compatible) -->
+<!-- PAYMENT MODAL: UNIVERSAL COMPATIBLE MODE -->
 <!-- ========================================== -->
 
 <!-- Load QR Scanner Library -->
@@ -1578,7 +1580,7 @@
             </div>
 
             <!-- DIRECT APP BUTTONS -->
-            <div class="grid grid-cols-2 gap-3 w-full mb-4">
+            <div class="grid grid-cols-2 gap-3 w-full mb-2">
                 <!-- GPay -->
                 <a id="btn-gpay" href="#" class="bg-[#1F2937] border border-gray-600 hover:border-green-500 hover:bg-gray-800 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all group">
                     <span class="text-sm font-bold group-hover:text-green-400">GPay</span>
@@ -1597,6 +1599,11 @@
                 </a>
             </div>
 
+            <!-- WARNING FOR TESTING -->
+            <p class="text-[10px] text-red-400/80 text-center mb-4 italic">
+                Note: You cannot pay your own UPI ID from the same device.
+            </p>
+
             <!-- SCANNER TOGGLE BUTTON -->
             <button id="btn-activate-scanner" class="w-full bg-[#374151] hover:bg-[#4B5563] text-white border border-gray-600 font-medium py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 group">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera text-amber-500 group-hover:scale-110 transition-transform"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
@@ -1606,10 +1613,8 @@
 
         <!-- SECTION 2: Camera Scanner (Hidden by default) -->
         <div id="camera-scanner-view" class="hidden w-full flex-col items-center relative min-h-[350px]">
-            
             <!-- Camera Viewfinder -->
             <div id="reader" class="w-full overflow-hidden rounded-lg border-2 border-amber-500/50 mb-4 bg-black relative" style="min-height: 300px;">
-                <!-- Decorative Scan Line Animation -->
                 <div id="scan-line" class="absolute top-0 left-0 w-full h-1 bg-amber-500 shadow-[0_0_10px_#f59e0b] z-10 hidden animate-scan"></div>
             </div>
 
@@ -1636,7 +1641,6 @@
                 Cancel & Go Back
             </button>
         </div>
-
     </div>
 </div>
 
@@ -1665,40 +1669,51 @@
     // ==========================================
 
     document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. SETUP DATA ---
         const nameDisplay = document.getElementById('payee-name-display');
         const safeVPA = UPI_CONFIG.vpa.trim().toLowerCase();
-        
-        // Encode name to ensure special characters don't break the link
         const safeName = UPI_CONFIG.name.trim(); 
         
         if(nameDisplay) nameDisplay.textContent = safeName;
 
-        // 2. Generate Simple Payment Query (P2P Safe)
-        // Removed 'tn' (Note) and 'tr' (ID) to prevent "Limit Exceeded" on personal accounts
+        // --- 2. LINK GENERATION LOGIC ---
+        // Construct standard UPI Query
         let paymentQuery = `?pa=${safeVPA}&pn=${encodeURIComponent(safeName)}&cu=${UPI_CONFIG.currency}`;
         
+        // Add Amount only if specified
         if (UPI_CONFIG.amount && UPI_CONFIG.amount.trim() !== '') {
             const safeAmount = parseFloat(UPI_CONFIG.amount).toFixed(2);
             paymentQuery += `&am=${safeAmount}`;
         }
 
+        // DETECT DEVICE TYPE
+        // This is crucial. 'intent://' links FAIL on iPhone/iOS.
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        // --- 3. CONFIGURE BUTTONS ---
         const apps = {
             gpay: { 
-                id: 'btn-gpay', 
-                // Simplified Intent for GPay
-                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=https://pay.google.com;end` 
+                id: 'btn-gpay',
+                // Android: Use Intent (Specific App) | iOS: Use Universal Link
+                href: isIOS 
+                    ? `upi://pay${paymentQuery}` 
+                    : `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=https://pay.google.com;end`
             },
             phonepe: { 
                 id: 'btn-phonepe', 
-                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.phonepe.app;S.browser_fallback_url=https://phonepe.com;end` 
+                href: isIOS 
+                    ? `upi://pay${paymentQuery}` 
+                    : `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.phonepe.app;S.browser_fallback_url=https://phonepe.com;end`
             },
             paytm: { 
                 id: 'btn-paytm', 
-                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=net.one97.paytm;S.browser_fallback_url=https://paytm.com;end` 
+                href: isIOS 
+                    ? `upi://pay${paymentQuery}` 
+                    : `intent://pay${paymentQuery}#Intent;scheme=upi;package=net.one97.paytm;S.browser_fallback_url=https://paytm.com;end`
             },
             bhim: { 
                 id: 'btn-bhim', 
-                href: `upi://pay${paymentQuery}` // Universal fallback
+                href: `upi://pay${paymentQuery}` // Always use universal for "Other"
             }
         };
 
@@ -1707,7 +1722,7 @@
             if (btn) btn.setAttribute('href', app.href);
         });
 
-        // 3. Setup Modal & Scanner (No changes to logic here)
+        // --- 4. SCANNER & MODAL LOGIC (Standard) ---
         const modal = document.getElementById('payment-modal');
         const closeBtn = document.getElementById('close-payment-modal');
         const staticView = document.getElementById('static-qr-view');
@@ -1780,7 +1795,7 @@
                 updateStatus("Error: Scanner library not loaded.", "text-red-500");
                 return;
             }
-            if(html5QrcodeScanner) {} // Cleanup check
+            if(html5QrcodeScanner) {} 
 
             html5QrcodeScanner = new Html5Qrcode("reader");
 
@@ -1843,15 +1858,6 @@
         }
     });
 </script>
-
-
-
-
-
-
-
-
-
 
 
 
