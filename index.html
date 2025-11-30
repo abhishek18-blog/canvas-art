@@ -1542,9 +1542,8 @@
         <img id="modal-image" src="" alt="Full View" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl border border-gray-700">
     </div>
 
-
 <!-- ========================================== -->
-<!-- PAYMENT MODAL: UNIVERSAL COMPATIBLE MODE -->
+<!-- PAYMENT MODAL: STANDARD COMPLIANT MODE V4 -->
 <!-- ========================================== -->
 
 <!-- Load QR Scanner Library -->
@@ -1599,9 +1598,8 @@
                 </a>
             </div>
 
-            <!-- WARNING FOR TESTING -->
-            <p class="text-[10px] text-red-400/80 text-center mb-4 italic">
-                Note: You cannot pay your own UPI ID from the same device.
+            <p class="text-[10px] text-gray-500 text-center mb-4 italic">
+                Secure P2P Transaction
             </p>
 
             <!-- SCANNER TOGGLE BUTTON -->
@@ -1662,7 +1660,7 @@
     // ==========================================
     const UPI_CONFIG = {
         vpa: 'deshmukhabhishek370@oksbi',         // 1. REPLACE with your UPI ID
-        name: 'Abhishek Vasant Deshmukh ',  // 2. REPLACE with your Name
+        name: 'Abhishek Vasant Deshmukh',  // 2. REPLACE with your Name
         amount: '',                  // 3. LEAVE EMPTY for manual amount
         currency: 'INR'
     };
@@ -1672,13 +1670,18 @@
         // --- 1. SETUP DATA ---
         const nameDisplay = document.getElementById('payee-name-display');
         const safeVPA = UPI_CONFIG.vpa.trim().toLowerCase();
-        const safeName = UPI_CONFIG.name.trim(); 
         
-        if(nameDisplay) nameDisplay.textContent = safeName;
+        // Sanitize name: Remove special chars that might break the UPI String
+        // Only alphanumeric and spaces are generally safe for 'pn'
+        const safeName = UPI_CONFIG.name.trim().replace(/[^\w\s]/gi, '');
+        
+        if(nameDisplay) nameDisplay.textContent = UPI_CONFIG.name;
 
         // --- 2. LINK GENERATION LOGIC ---
-        // Construct standard UPI Query
-        let paymentQuery = `?pa=${safeVPA}&pn=${encodeURIComponent(safeName)}&cu=${UPI_CONFIG.currency}`;
+        // RESTORED: 'pn' (Name) is REQUIRED by UPI spec. Removing it can cause validation errors.
+        // RESTORED: 'tn' (Note) set to 'Pay' as some banks require a note.
+        // NEW: 'mode=00' explicitly defines this as a P2P transaction to avoid Merchant Limit errors.
+        let paymentQuery = `?pa=${safeVPA}&pn=${encodeURIComponent(safeName)}&tn=Pay&cu=${UPI_CONFIG.currency}&mode=00`;
         
         // Add Amount only if specified
         if (UPI_CONFIG.amount && UPI_CONFIG.amount.trim() !== '') {
@@ -1687,14 +1690,14 @@
         }
 
         // DETECT DEVICE TYPE
-        // This is crucial. 'intent://' links FAIL on iPhone/iOS.
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
         // --- 3. CONFIGURE BUTTONS ---
         const apps = {
             gpay: { 
                 id: 'btn-gpay',
-                // Android: Use Intent (Specific App) | iOS: Use Universal Link
+                // Android: Use the 'paisa.user' package. 
+                // CRITICAL: We pass the FULL query including 'mode=00' and 'pn'.
                 href: isIOS 
                     ? `upi://pay${paymentQuery}` 
                     : `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=https://pay.google.com;end`
@@ -1713,7 +1716,7 @@
             },
             bhim: { 
                 id: 'btn-bhim', 
-                href: `upi://pay${paymentQuery}` // Always use universal for "Other"
+                href: `upi://pay${paymentQuery}` 
             }
         };
 
@@ -1858,9 +1861,6 @@
         }
     });
 </script>
-
-
-
 
 
     
