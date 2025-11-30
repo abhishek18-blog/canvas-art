@@ -1541,10 +1541,8 @@
         </button>
         <img id="modal-image" src="" alt="Full View" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl border border-gray-700">
     </div>
-
-
- <!-- ========================================== -->
-<!-- PAYMENT MODAL: QR, BUTTONS & SCANNER V3 -->
+<!-- ========================================== -->
+<!-- PAYMENT MODAL: SAFE MODE (P2P Compatible) -->
 <!-- ========================================== -->
 
 <!-- Load QR Scanner Library -->
@@ -1567,7 +1565,7 @@
             <!-- QR CODE IMAGE -->
             <div class="bg-white p-2 rounded-lg mb-2 w-48 h-48 flex items-center justify-center shadow-lg ring-4 ring-white/10">
                 <!-- ⬇️ REPLACE THIS IMAGE SOURCE ⬇️ -->
-                <img src="qrcode1.png" alt="Payment QR Code" class="w-full h-full object-contain">
+                <img src="your-upi-qr-code.png" alt="Payment QR Code" class="w-full h-full object-contain">
             </div>
             
             <p class="text-gray-400 text-xs text-center mb-4">Scan with any UPI App</p>
@@ -1615,7 +1613,7 @@
                 <div id="scan-line" class="absolute top-0 left-0 w-full h-1 bg-amber-500 shadow-[0_0_10px_#f59e0b] z-10 hidden animate-scan"></div>
             </div>
 
-            <!-- ERROR OVERLAY (Shown when access is denied) -->
+            <!-- ERROR OVERLAY -->
             <div id="camera-error-overlay" class="hidden absolute top-0 left-0 w-full h-[300px] bg-gray-900/95 z-20 flex flex-col items-center justify-center p-6 text-center rounded-lg border border-red-500/30">
                 <div class="bg-red-500/20 p-3 rounded-full mb-3">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera-off"><line x1="2" x2="22" y1="2" y2="22"/><path d="M7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16"/><path d="M9.5 4h5L17 7h3a2 2 0 0 1 2 2v7.5"/><path d="M14.121 15.121A3 3 0 1 1 9.88 10.88"/></svg>
@@ -1643,7 +1641,6 @@
 </div>
 
 <style>
-    /* Scan line animation */
     @keyframes scan {
         0% { top: 0%; opacity: 0; }
         10% { opacity: 1; }
@@ -1660,28 +1657,26 @@
     // ⬇️ CONFIGURATION ⬇️
     // ==========================================
     const UPI_CONFIG = {
-        vpa: 'deshmukhabhishek370@oksbi',         // 1. REPLACE with your UPI ID
-        name: 'Artisans Canvas',  // 2. REPLACE with your Name
-        amount: '',                  // 3. LEAVE EMPTY for user-entered amount, or set fixed (e.g. '199.00')
+        vpa: 'yourname@upi',         // 1. REPLACE with your UPI ID
+        name: 'Your Business Name',  // 2. REPLACE with your Name
+        amount: '',                  // 3. LEAVE EMPTY for manual amount
         currency: 'INR'
     };
     // ==========================================
 
     document.addEventListener('DOMContentLoaded', () => {
-        // 1. Set Display Name & Sanitize Inputs
         const nameDisplay = document.getElementById('payee-name-display');
         const safeVPA = UPI_CONFIG.vpa.trim().toLowerCase();
         
-        // FIX: Remove semicolons to prevent Android Intent breakage
-        const safeName = UPI_CONFIG.name.trim().replace(/;/g, ''); 
+        // Encode name to ensure special characters don't break the link
+        const safeName = UPI_CONFIG.name.trim(); 
         
         if(nameDisplay) nameDisplay.textContent = safeName;
 
-        // 2. Generate Payment Links (For Buttons)
-        // Base Query without Amount
-        let paymentQuery = `?pa=${safeVPA}&pn=${encodeURIComponent(safeName)}&cu=${UPI_CONFIG.currency}&tn=Payment`;
+        // 2. Generate Simple Payment Query (P2P Safe)
+        // Removed 'tn' (Note) and 'tr' (ID) to prevent "Limit Exceeded" on personal accounts
+        let paymentQuery = `?pa=${safeVPA}&pn=${encodeURIComponent(safeName)}&cu=${UPI_CONFIG.currency}`;
         
-        // Only append Amount if it exists and is not empty
         if (UPI_CONFIG.amount && UPI_CONFIG.amount.trim() !== '') {
             const safeAmount = parseFloat(UPI_CONFIG.amount).toFixed(2);
             paymentQuery += `&am=${safeAmount}`;
@@ -1690,7 +1685,8 @@
         const apps = {
             gpay: { 
                 id: 'btn-gpay', 
-                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.pn=${safeName};S.browser_fallback_url=https://pay.google.com;end` 
+                // Simplified Intent for GPay
+                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=https://pay.google.com;end` 
             },
             phonepe: { 
                 id: 'btn-phonepe', 
@@ -1711,7 +1707,7 @@
             if (btn) btn.setAttribute('href', app.href);
         });
 
-        // 3. Element References
+        // 3. Setup Modal & Scanner (No changes to logic here)
         const modal = document.getElementById('payment-modal');
         const closeBtn = document.getElementById('close-payment-modal');
         const staticView = document.getElementById('static-qr-view');
@@ -1720,14 +1716,12 @@
         const cancelScanBtn = document.getElementById('btn-cancel-scan');
         const retryBtn = document.getElementById('btn-retry-permission');
         const errorOverlay = document.getElementById('camera-error-overlay');
-        
         const statusTextContainer = document.getElementById('scanner-status');
         const scanLine = document.getElementById('scan-line');
         
         let html5QrcodeScanner = null;
         let isScanning = false;
 
-        // 4. Modal Functions
         window.openPaymentModal = function() {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -1740,18 +1734,15 @@
             stopScanner();
         });
 
-        // 5. View Switching
         activateScanBtn.addEventListener('click', () => {
             staticView.classList.add('hidden');
             cameraView.classList.remove('hidden');
             cameraView.classList.add('flex');
             
-            // Safety Check for HTTPS (Camera won't work on http unless localhost)
             if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
                 showError("Camera requires a Secure Connection (HTTPS).");
                 return;
             }
-
             startScanner();
         });
 
@@ -1784,55 +1775,36 @@
             updateStatus("Permission Error", "text-red-500");
         }
 
-        // 6. Scanner Logic
         function startScanner() {
             if (typeof Html5Qrcode === 'undefined') {
                 updateStatus("Error: Scanner library not loaded.", "text-red-500");
                 return;
             }
-
-            // Clean up previous instance
-            if(html5QrcodeScanner) {
-                // Safety cleanup
-            }
+            if(html5QrcodeScanner) {} // Cleanup check
 
             html5QrcodeScanner = new Html5Qrcode("reader");
 
             const config = { 
                 fps: 10, 
-                qrbox: (viewfinderWidth, viewfinderHeight) => {
-                    const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-                    return {
-                        width: Math.floor(minEdge * 0.7),
-                        height: Math.floor(minEdge * 0.7)
-                    };
-                },
+                qrbox: (w, h) => ({ width: Math.floor(Math.min(w, h) * 0.7), height: Math.floor(Math.min(w, h) * 0.7) }),
                 aspectRatio: 1.0 
             };
 
-            // Use simplest constraints to prevent errors before permission
-            const constraints = { 
-                facingMode: "environment"
-            };
+            const constraints = { facingMode: "environment" };
 
-            // UPDATE: Show explicit instruction while waiting for browser popup
             updateStatus("Please tap 'Allow' in the camera popup...", "text-amber-400", true);
 
-            html5QrcodeScanner.start(
-                constraints, 
-                config, 
-                onScanSuccess,
-                onScanFailure
-            ).then(() => {
-                isScanning = true;
-                scanLine.classList.remove('hidden');
-                errorOverlay.classList.add('hidden');
-                updateStatus("Point camera at QR Code", "text-white");
-            }).catch(err => {
-                console.error("Camera start error:", err);
-                isScanning = false;
-                showError();
-            });
+            html5QrcodeScanner.start(constraints, config, onScanSuccess, onScanFailure)
+                .then(() => {
+                    isScanning = true;
+                    scanLine.classList.remove('hidden');
+                    errorOverlay.classList.add('hidden');
+                    updateStatus("Point camera at QR Code", "text-white");
+                }).catch(err => {
+                    console.error("Camera start error:", err);
+                    isScanning = false;
+                    showError();
+                });
         }
 
         function stopScanner() {
@@ -1848,17 +1820,13 @@
         function onScanSuccess(decodedText) {
             if (!isScanning) return; 
 
-            // 1. Success Message
             updateStatus("✅ Scanned! Opening...", "text-green-400 font-bold");
             stopScanner(); 
 
-            // 2. Force Redirect (No strict checks)
             setTimeout(() => {
                 window.location.href = decodedText;
             }, 500);
 
-            // 3. FALLBACK BUTTON (Crucial for reliability)
-            // If the browser blocks the redirect, this button ensures the user can still proceed.
             const btnHtml = `
                 <div class="mt-4 animate-bounce">
                     <a href="${decodedText}" class="bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 px-6 rounded-full shadow-lg text-sm flex items-center gap-2">
@@ -1867,8 +1835,6 @@
                     </a>
                 </div>
             `;
-            
-            // Append the button to the status area
             statusTextContainer.insertAdjacentHTML('beforeend', btnHtml);
         }
 
@@ -1880,14 +1846,18 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
     
-
-
-
-
-
-    
-
     <!---footer--->
     
       <footer class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white mt-16 border-t-4 border-amber-500/30 shadow-2xl">
