@@ -1546,7 +1546,7 @@
   
     <!-- Consolidated PAYMENT MODAL (single instance) -->
 <!-- ========================================== -->
-<!-- PAYMENT MODAL: QR & SCANNER ONLY -->
+<!-- PAYMENT MODAL: QR & ENHANCED SCANNER -->
 <!-- ========================================== -->
 
 <!-- Load QR Scanner Library -->
@@ -1561,7 +1561,6 @@
         </button>
 
         <h3 class="text-2xl font-bold text-white mb-1 mt-2">Pay via UPI</h3>
-        <!-- Displays the name set in Config below -->
         <p class="text-gray-400 text-xs mb-6">Paying: <span id="payee-name-display" class="text-amber-400">...</span></p>
         
         <!-- SECTION 1: Static QR View -->
@@ -1585,11 +1584,18 @@
         </div>
 
         <!-- SECTION 2: Camera Scanner (Hidden by default) -->
-        <div id="camera-scanner-view" class="hidden w-full flex-col items-center">
-            <!-- Camera Viewfinder -->
-            <div id="reader" class="w-full overflow-hidden rounded-lg border-2 border-amber-500/50 mb-4 bg-black" style="min-height: 250px;"></div>
+        <div id="camera-scanner-view" class="hidden w-full flex-col items-center relative">
             
-            <p id="scanner-status" class="text-amber-400 text-xs mb-4 animate-pulse">Waiting for camera permission...</p>
+            <!-- Camera Viewfinder -->
+            <div id="reader" class="w-full overflow-hidden rounded-lg border-2 border-amber-500/50 mb-4 bg-black relative" style="min-height: 300px;">
+                <!-- Decorative Scan Line Animation -->
+                <div id="scan-line" class="absolute top-0 left-0 w-full h-1 bg-amber-500 shadow-[0_0_10px_#f59e0b] z-10 hidden animate-scan"></div>
+            </div>
+            
+            <!-- Status Text -->
+            <div id="scanner-status" class="text-center mb-4 min-h-[1.5rem]">
+                <p class="text-amber-400 text-xs animate-pulse">Initializing camera...</p>
+            </div>
 
             <button id="btn-cancel-scan" class="text-gray-400 hover:text-white underline text-sm">
                 Cancel & Go Back
@@ -1599,12 +1605,25 @@
     </div>
 </div>
 
+<style>
+    /* Scan line animation */
+    @keyframes scan {
+        0% { top: 0%; opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { top: 100%; opacity: 0; }
+    }
+    .animate-scan {
+        animation: scan 2s linear infinite;
+    }
+</style>
+
 <script>
     // ==========================================
-    // ⬇️ EDIT YOUR DETAILS HERE ⬇️
+    // ⬇️ CONFIGURATION ⬇️
     // ==========================================
     const UPI_CONFIG = {
-        name: 'Artisans Canvas'  // Used only for the "Paying: Name" text
+        name: 'Artisans Canvas' 
     };
     // ==========================================
 
@@ -1620,8 +1639,11 @@
         const cameraView = document.getElementById('camera-scanner-view');
         const activateScanBtn = document.getElementById('btn-activate-scanner');
         const cancelScanBtn = document.getElementById('btn-cancel-scan');
-        const statusText = document.getElementById('scanner-status');
+        const statusTextContainer = document.getElementById('scanner-status');
+        const scanLine = document.getElementById('scan-line');
+        
         let html5QrcodeScanner = null;
+        let isScanning = false;
 
         // 3. Modal Functions
         window.openPaymentModal = function() {
@@ -1653,42 +1675,90 @@
             cameraView.classList.add('hidden');
             cameraView.classList.remove('flex');
             staticView.classList.remove('hidden');
+            updateStatus("Initializing camera...", "text-amber-400", true);
+        }
+
+        function updateStatus(text, colorClass, pulse = false) {
+            statusTextContainer.innerHTML = `<p class="${colorClass} text-xs ${pulse ? 'animate-pulse' : ''}">${text}</p>`;
         }
 
         // 5. Scanner Logic
         function startScanner() {
-            statusText.innerText = "Requesting camera access...";
             if (typeof Html5Qrcode === 'undefined') {
-                statusText.innerText = "Error: Scanner library not loaded.";
+                updateStatus("Error: Scanner library not loaded. Check internet.", "text-red-500");
                 return;
             }
 
+            // Create instance
             html5QrcodeScanner = new Html5Qrcode("reader");
 
+            const config = { 
+                fps: 10, 
+                // Dynamic QR Box: 70% of the smaller screen dimension
+                qrbox: (viewfinderWidth, viewfinderHeight) => {
+                    const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                    return {
+                        width: Math.floor(minEdge * 0.7),
+                        height: Math.floor(minEdge * 0.7)
+                    };
+                },
+                aspectRatio: 1.0 
+            };
+
+            // High-Res Constraints for better scanning
+            const constraints = { 
+                facingMode: "environment",
+                width: { min: 640, ideal: 1280, max: 1920 },
+                height: { min: 480, ideal: 720, max: 1080 }
+            };
+
             html5QrcodeScanner.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 250 } },
+                constraints, 
+                config, 
                 onScanSuccess,
                 onScanFailure
-            ).catch(err => {
-                statusText.innerText = "Camera error: " + err;
+            ).then(() => {
+                isScanning = true;
+                scanLine.classList.remove('hidden');
+                updateStatus("Point camera at QR Code", "text-white");
+            }).catch(err => {
+                console.error("Camera start error:", err);
+                updateStatus("Camera Access Denied or Error. Please check permissions.", "text-red-500");
             });
         }
 
         function stopScanner() {
-            if (html5QrcodeScanner) {
+            if (html5QrcodeScanner && isScanning) {
                 html5QrcodeScanner.stop().then(() => {
                     html5QrcodeScanner.clear();
-                    html5QrcodeScanner = null;
+                    isScanning = false;
+                    scanLine.classList.add('hidden');
                 }).catch(console.error);
             }
         }
 
         function onScanSuccess(decodedText) {
-            statusText.innerText = "Success! Redirecting...";
-            stopScanner();
-            // Redirect to the scanned UPI link
-            window.location.href = decodedText;
+            if (!isScanning) return; // Prevent multiple triggers
+
+            // 1. Play Feedback
+            updateStatus("✅ QR Code Detected!", "text-green-400 font-bold");
+            stopScanner(); // Stop camera immediately
+
+            // 2. Validate URL (Basic check to avoid garbage data)
+            const lowerText = decodedText.toLowerCase();
+            if (lowerText.startsWith('http') || lowerText.startsWith('upi') || lowerText.startsWith('intent')) {
+                
+                // 3. Delay slightly for UX, then Redirect
+                setTimeout(() => {
+                    updateStatus("Redirecting to payment app...", "text-white");
+                    window.location.assign(decodedText);
+                }, 1000);
+
+            } else {
+                updateStatus("⚠️ Scanned code is not a valid link.", "text-red-400");
+                // Optional: Restart scanner after error?
+                // For now, we leave it stopped so user can read error.
+            }
         }
 
         function onScanFailure(error) {
