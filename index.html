@@ -1546,7 +1546,7 @@
   
     <!-- Consolidated PAYMENT MODAL (single instance) -->
 <!-- ========================================== -->
-<!-- PAYMENT MODAL: QR & ENHANCED SCANNER -->
+<!-- PAYMENT MODAL: QR & ENHANCED SCANNER V2 -->
 <!-- ========================================== -->
 
 <!-- Load QR Scanner Library -->
@@ -1569,7 +1569,7 @@
             <!-- QR CODE IMAGE -->
             <div class="bg-white p-2 rounded-lg mb-4 w-56 h-56 flex items-center justify-center shadow-lg ring-4 ring-white/10">
                 <!-- ⬇️ REPLACE THIS IMAGE SOURCE ⬇️ -->
-                <img src="qrcode.png" alt="Payment QR Code" class="w-full h-full object-contain">
+                <img src="qrcode1.png" alt="Payment QR Code" class="w-full h-full object-contain">
             </div>
             
             <p class="text-gray-400 text-sm text-center mb-6">
@@ -1584,16 +1584,30 @@
         </div>
 
         <!-- SECTION 2: Camera Scanner (Hidden by default) -->
-        <div id="camera-scanner-view" class="hidden w-full flex-col items-center relative">
+        <div id="camera-scanner-view" class="hidden w-full flex-col items-center relative min-h-[350px]">
             
             <!-- Camera Viewfinder -->
             <div id="reader" class="w-full overflow-hidden rounded-lg border-2 border-amber-500/50 mb-4 bg-black relative" style="min-height: 300px;">
                 <!-- Decorative Scan Line Animation -->
                 <div id="scan-line" class="absolute top-0 left-0 w-full h-1 bg-amber-500 shadow-[0_0_10px_#f59e0b] z-10 hidden animate-scan"></div>
             </div>
+
+            <!-- ERROR OVERLAY (Shown when access is denied) -->
+            <div id="camera-error-overlay" class="hidden absolute top-0 left-0 w-full h-[300px] bg-gray-900/95 z-20 flex flex-col items-center justify-center p-6 text-center rounded-lg border border-red-500/30">
+                <div class="bg-red-500/20 p-3 rounded-full mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera-off"><line x1="2" x2="22" y1="2" y2="22"/><path d="M7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16"/><path d="M9.5 4h5L17 7h3a2 2 0 0 1 2 2v7.5"/><path d="M14.121 15.121A3 3 0 1 1 9.88 10.88"/></svg>
+                </div>
+                <h4 class="text-white font-bold mb-1">Camera Access Denied</h4>
+                <p class="text-gray-400 text-xs mb-4">
+                    Your browser blocked camera access. Please check your address bar or settings to allow permissions.
+                </p>
+                <button id="btn-retry-permission" class="bg-amber-500 text-black font-bold py-2 px-6 rounded-lg hover:bg-amber-400 transition-colors text-sm">
+                    Try Again
+                </button>
+            </div>
             
             <!-- Status Text -->
-            <div id="scanner-status" class="text-center mb-4 min-h-[1.5rem]">
+            <div id="scanner-status" class="text-center mb-4 min-h-[1.5rem] w-full">
                 <p class="text-amber-400 text-xs animate-pulse">Initializing camera...</p>
             </div>
 
@@ -1639,6 +1653,9 @@
         const cameraView = document.getElementById('camera-scanner-view');
         const activateScanBtn = document.getElementById('btn-activate-scanner');
         const cancelScanBtn = document.getElementById('btn-cancel-scan');
+        const retryBtn = document.getElementById('btn-retry-permission');
+        const errorOverlay = document.getElementById('camera-error-overlay');
+        
         const statusTextContainer = document.getElementById('scanner-status');
         const scanLine = document.getElementById('scan-line');
         
@@ -1663,6 +1680,13 @@
             staticView.classList.add('hidden');
             cameraView.classList.remove('hidden');
             cameraView.classList.add('flex');
+            
+            // Safety Check for HTTPS (Camera won't work on http unless localhost)
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                showError("Camera requires a Secure Connection (HTTPS).");
+                return;
+            }
+
             startScanner();
         });
 
@@ -1671,10 +1695,17 @@
             resetView();
         });
 
+        retryBtn.addEventListener('click', () => {
+            errorOverlay.classList.add('hidden');
+            updateStatus("Retrying... Please allow access.", "text-amber-400", true);
+            startScanner();
+        });
+
         function resetView() {
             cameraView.classList.add('hidden');
             cameraView.classList.remove('flex');
             staticView.classList.remove('hidden');
+            errorOverlay.classList.add('hidden');
             updateStatus("Initializing camera...", "text-amber-400", true);
         }
 
@@ -1682,19 +1713,28 @@
             statusTextContainer.innerHTML = `<p class="${colorClass} text-xs ${pulse ? 'animate-pulse' : ''}">${text}</p>`;
         }
 
+        function showError(msg) {
+            errorOverlay.classList.remove('hidden');
+            if(msg) console.log(msg);
+            updateStatus("Permission Error", "text-red-500");
+        }
+
         // 5. Scanner Logic
         function startScanner() {
             if (typeof Html5Qrcode === 'undefined') {
-                updateStatus("Error: Scanner library not loaded. Check internet.", "text-red-500");
+                updateStatus("Error: Scanner library not loaded.", "text-red-500");
                 return;
             }
 
-            // Create instance
+            // Clean up previous instance
+            if(html5QrcodeScanner) {
+                // Safety cleanup
+            }
+
             html5QrcodeScanner = new Html5Qrcode("reader");
 
             const config = { 
                 fps: 10, 
-                // Dynamic QR Box: 70% of the smaller screen dimension
                 qrbox: (viewfinderWidth, viewfinderHeight) => {
                     const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
                     return {
@@ -1705,12 +1745,13 @@
                 aspectRatio: 1.0 
             };
 
-            // High-Res Constraints for better scanning
+            // Use simplest constraints to prevent errors before permission
             const constraints = { 
-                facingMode: "environment",
-                width: { min: 640, ideal: 1280, max: 1920 },
-                height: { min: 480, ideal: 720, max: 1080 }
+                facingMode: "environment"
             };
+
+            // UPDATE: Show explicit instruction while waiting for browser popup
+            updateStatus("Please tap 'Allow' in the camera popup...", "text-amber-400", true);
 
             html5QrcodeScanner.start(
                 constraints, 
@@ -1720,10 +1761,12 @@
             ).then(() => {
                 isScanning = true;
                 scanLine.classList.remove('hidden');
+                errorOverlay.classList.add('hidden');
                 updateStatus("Point camera at QR Code", "text-white");
             }).catch(err => {
                 console.error("Camera start error:", err);
-                updateStatus("Camera Access Denied or Error. Please check permissions.", "text-red-500");
+                isScanning = false;
+                showError();
             });
         }
 
@@ -1738,26 +1781,19 @@
         }
 
         function onScanSuccess(decodedText) {
-            if (!isScanning) return; // Prevent multiple triggers
+            if (!isScanning) return; 
 
-            // 1. Play Feedback
             updateStatus("✅ QR Code Detected!", "text-green-400 font-bold");
-            stopScanner(); // Stop camera immediately
+            stopScanner(); 
 
-            // 2. Validate URL (Basic check to avoid garbage data)
             const lowerText = decodedText.toLowerCase();
             if (lowerText.startsWith('http') || lowerText.startsWith('upi') || lowerText.startsWith('intent')) {
-                
-                // 3. Delay slightly for UX, then Redirect
                 setTimeout(() => {
-                    updateStatus("Redirecting to payment app...", "text-white");
+                    updateStatus("Redirecting...", "text-white");
                     window.location.assign(decodedText);
                 }, 1000);
-
             } else {
                 updateStatus("⚠️ Scanned code is not a valid link.", "text-red-400");
-                // Optional: Restart scanner after error?
-                // For now, we leave it stopped so user can read error.
             }
         }
 
@@ -1767,6 +1803,10 @@
     });
 </script>
 
+
+
+
+    <!---footer--->
     
       <footer class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white mt-16 border-t-4 border-amber-500/30 shadow-2xl">
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
