@@ -1543,7 +1543,6 @@
     </div>
 
 
-  
  <!-- ========================================== -->
 <!-- PAYMENT MODAL: QR, BUTTONS & SCANNER V3 -->
 <!-- ========================================== -->
@@ -1663,7 +1662,7 @@
     const UPI_CONFIG = {
         vpa: 'deshmukhabhishek370@oksbi',         // 1. REPLACE with your UPI ID
         name: 'Artisans Canvas',  // 2. REPLACE with your Name
-        amount: '10.00',              // 3. REPLACE with amount
+        amount: '',                  // 3. LEAVE EMPTY for user-entered amount, or set fixed (e.g. '199.00')
         currency: 'INR'
     };
     // ==========================================
@@ -1672,19 +1671,26 @@
         // 1. Set Display Name & Sanitize Inputs
         const nameDisplay = document.getElementById('payee-name-display');
         const safeVPA = UPI_CONFIG.vpa.trim().toLowerCase();
-        const safeName = UPI_CONFIG.name.trim();
-        const safeAmount = parseFloat(UPI_CONFIG.amount).toFixed(2);
+        
+        // FIX: Remove semicolons to prevent Android Intent breakage
+        const safeName = UPI_CONFIG.name.trim().replace(/;/g, ''); 
         
         if(nameDisplay) nameDisplay.textContent = safeName;
 
         // 2. Generate Payment Links (For Buttons)
-        const tr = Math.floor(Math.random() * 100000000); // Random Transaction ID
-        const paymentQuery = `?pa=${safeVPA}&pn=${encodeURIComponent(safeName)}&am=${safeAmount}&cu=${UPI_CONFIG.currency}&tn=Payment&tr=${tr}`;
+        // Base Query without Amount
+        let paymentQuery = `?pa=${safeVPA}&pn=${encodeURIComponent(safeName)}&cu=${UPI_CONFIG.currency}&tn=Payment`;
+        
+        // Only append Amount if it exists and is not empty
+        if (UPI_CONFIG.amount && UPI_CONFIG.amount.trim() !== '') {
+            const safeAmount = parseFloat(UPI_CONFIG.amount).toFixed(2);
+            paymentQuery += `&am=${safeAmount}`;
+        }
 
         const apps = {
             gpay: { 
                 id: 'btn-gpay', 
-                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.pn=${safeName};S.tn=Payment;S.browser_fallback_url=https://pay.google.com;end` 
+                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.pn=${safeName};S.browser_fallback_url=https://pay.google.com;end` 
             },
             phonepe: { 
                 id: 'btn-phonepe', 
@@ -1874,21 +1880,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
 
