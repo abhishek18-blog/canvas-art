@@ -1545,42 +1545,66 @@
 
   
     <!-- Consolidated PAYMENT MODAL (single instance) -->
-
 <!-- ========================================== -->
-<!-- PAYMENT MODAL WITH QR & SCANNER -->
+<!-- PAYMENT MODAL: QR + BUTTONS + SCANNER -->
 <!-- ========================================== -->
 
 <!-- Load QR Scanner Library -->
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <div id="payment-modal" class="fixed inset-0 z-[80] hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300" aria-hidden="true">
-    <div class="bg-[#1F2937] p-8 rounded-2xl shadow-2xl border border-amber-500/30 max-w-md w-full relative modal-enter flex flex-col items-center">
+    <!-- Increased max-height for scrolling on small screens -->
+    <div class="bg-[#1F2937] p-6 rounded-2xl shadow-2xl border border-amber-500/30 max-w-md w-full relative modal-enter flex flex-col items-center max-h-[90vh] overflow-y-auto">
         
         <!-- Close Button -->
         <button id="close-payment-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors" aria-label="Close payment dialog">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         </button>
 
-        <!-- Header Icon -->
-        <div class="bg-amber-500/20 p-4 rounded-full inline-block mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-qr-code"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
-        </div>
-        <h3 class="text-2xl font-bold text-white mb-2">Scan & Pay</h3>
+        <h3 class="text-2xl font-bold text-white mb-1 mt-2">Pay via UPI</h3>
+        <p class="text-gray-400 text-xs mb-4">Paying: <span id="payee-name-display" class="text-amber-400">...</span></p>
         
-        <!-- SECTION 1: Display Static QR Code -->
+        <!-- SECTION 1: QR & Buttons View -->
         <div id="static-qr-view" class="w-full flex flex-col items-center">
-            <div class="bg-white p-2 rounded-lg mb-4 w-64 h-64 flex items-center justify-center">
+            
+            <!-- A. QR CODE (For Desktop Users) -->
+            <div class="bg-white p-2 rounded-lg mb-2 w-48 h-48 flex items-center justify-center shadow-lg">
                 <!-- ⬇️ REPLACE THIS IMAGE SOURCE ⬇️ -->
                 <img src="your-upi-qr-code.png" alt="Payment QR Code" class="w-full h-full object-contain">
             </div>
-            
-            <p class="text-gray-400 text-sm mb-6 text-center">Scan this QR code with any UPI App<br>to make a payment.</p>
+            <p class="text-gray-500 text-xs text-center mb-4">Scan with any UPI App</p>
 
-            <div class="w-full border-t border-gray-700 my-4"></div>
+            <!-- Divider -->
+            <div class="flex items-center w-full gap-2 mb-4">
+                <div class="h-px bg-gray-700 flex-1"></div>
+                <span class="text-gray-500 text-xs font-medium">OR TAP TO PAY</span>
+                <div class="h-px bg-gray-700 flex-1"></div>
+            </div>
 
-            <button id="btn-activate-scanner" class="w-full bg-[#1F2937] border border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                Scan with Camera
+            <!-- B. DIRECT APP BUTTONS (For Mobile Users) -->
+            <div class="grid grid-cols-2 gap-3 w-full mb-4">
+                <!-- GPay -->
+                <a id="btn-gpay" href="#" class="bg-[#1F2937] border border-gray-600 hover:border-green-500 hover:bg-gray-800 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all">
+                    <span class="text-sm font-bold">GPay</span>
+                </a>
+                <!-- PhonePe -->
+                <a id="btn-phonepe" href="#" class="bg-[#1F2937] border border-gray-600 hover:border-[#5f259f] hover:bg-gray-800 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all">
+                    <span class="text-sm font-bold">PhonePe</span>
+                </a>
+                <!-- Paytm -->
+                <a id="btn-paytm" href="#" class="bg-[#1F2937] border border-gray-600 hover:border-[#00b9f1] hover:bg-gray-800 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all">
+                    <span class="text-sm font-bold">Paytm</span>
+                </a>
+                <!-- BHIM / Other -->
+                <a id="btn-bhim" href="#" class="bg-[#1F2937] border border-gray-600 hover:border-orange-500 hover:bg-gray-800 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all">
+                    <span class="text-sm font-bold">Other</span>
+                </a>
+            </div>
+
+            <!-- C. SCANNER TOGGLE -->
+            <button id="btn-activate-scanner" class="w-full text-amber-500 hover:text-amber-400 text-sm hover:underline flex items-center justify-center gap-2 mt-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                Open Camera Scanner
             </button>
         </div>
 
@@ -1599,36 +1623,68 @@
 </div>
 
 <script>
+    // ==========================================
+    // ⬇️ EDIT YOUR DETAILS HERE ⬇️
+    // ==========================================
+  const UPI_CONFIG = {
+        vpa: 'deshmukhabhishek370@oksbi',         // REPLACE with your UPI ID
+        name: 'Artisans Canvas',  // REPLACE with your Name
+        amount: '0.00',              // REPLACE with amount (Must be string)
+        currency: 'INR'
+    };
+    // ==========================================
+
     document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. SETUP PAYMENT LINKS (For Buttons) ---
+        const safeVPA = UPI_CONFIG.vpa.trim().toLowerCase();
+        const safeName = UPI_CONFIG.name.trim();
+        const safeAmount = parseFloat(UPI_CONFIG.amount).toFixed(2);
+        
+        // Display Name
+        const nameDisplay = document.getElementById('payee-name-display');
+        if(nameDisplay) nameDisplay.textContent = safeName;
+
+        // Generate Transaction ID for GPay reliability
+        const tr = Math.floor(Math.random() * 100000000); 
+
+        // Base Query String
+        const paymentQuery = `?pa=${safeVPA}&pn=${encodeURIComponent(safeName)}&am=${safeAmount}&cu=${UPI_CONFIG.currency}&tn=Payment&tr=${tr}`;
+
+        const apps = {
+            gpay: { id: 'btn-gpay', href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.pn=${safeName};S.tn=Payment;S.browser_fallback_url=https://pay.google.com;end` },
+            phonepe: { id: 'btn-phonepe', href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.phonepe.app;S.browser_fallback_url=https://phonepe.com;end` },
+            paytm: { id: 'btn-paytm', href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=net.one97.paytm;S.browser_fallback_url=https://paytm.com;end` },
+            bhim: { id: 'btn-bhim', href: `upi://pay${paymentQuery}` } // Universal fallback
+        };
+
+        Object.values(apps).forEach(app => {
+            const btn = document.getElementById(app.id);
+            if (btn) btn.setAttribute('href', app.href);
+        });
+
+
+        // --- 2. MODAL & SCANNER LOGIC ---
         const modal = document.getElementById('payment-modal');
         const closeBtn = document.getElementById('close-payment-modal');
-        
-        // Views
         const staticView = document.getElementById('static-qr-view');
         const cameraView = document.getElementById('camera-scanner-view');
-        
-        // Buttons
         const activateScanBtn = document.getElementById('btn-activate-scanner');
         const cancelScanBtn = document.getElementById('btn-cancel-scan');
         const statusText = document.getElementById('scanner-status');
-
         let html5QrcodeScanner = null;
 
-        // 1. Open Modal Function
         window.openPaymentModal = function() {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             resetView();
         }
 
-        // 2. Close Modal Function
         closeBtn.addEventListener('click', () => {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             stopScanner();
         });
 
-        // 3. Switch to Camera View
         activateScanBtn.addEventListener('click', () => {
             staticView.classList.add('hidden');
             cameraView.classList.remove('hidden');
@@ -1636,7 +1692,6 @@
             startScanner();
         });
 
-        // 4. Cancel Scanning
         cancelScanBtn.addEventListener('click', () => {
             stopScanner();
             resetView();
@@ -1648,32 +1703,20 @@
             staticView.classList.remove('hidden');
         }
 
-        // 5. Scanner Logic
         function startScanner() {
             statusText.innerText = "Requesting camera access...";
-            
-            // Check if library is loaded
             if (typeof Html5Qrcode === 'undefined') {
                 statusText.innerText = "Error: Scanner library not loaded.";
-                statusText.classList.remove('animate-pulse');
-                statusText.classList.add('text-red-500');
                 return;
             }
-
             html5QrcodeScanner = new Html5Qrcode("reader");
-
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-            
             html5QrcodeScanner.start(
-                { facingMode: "environment" }, // Prefer back camera
-                config,
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
                 onScanSuccess,
                 onScanFailure
             ).catch(err => {
-                console.error("Error starting scanner", err);
                 statusText.innerText = "Camera error: " + err;
-                statusText.classList.remove('animate-pulse');
-                statusText.classList.add('text-red-500');
             });
         }
 
@@ -1682,39 +1725,21 @@
                 html5QrcodeScanner.stop().then(() => {
                     html5QrcodeScanner.clear();
                     html5QrcodeScanner = null;
-                }).catch(err => {
-                    console.error("Failed to stop scanner", err);
-                });
+                }).catch(console.error);
             }
         }
 
-        function onScanSuccess(decodedText, decodedResult) {
-            // Handle the scanned code
-            console.log(`Code matched = ${decodedText}`, decodedResult);
+        function onScanSuccess(decodedText) {
             statusText.innerText = "Success! Redirecting...";
-            statusText.classList.remove('text-amber-400');
-            statusText.classList.add('text-green-500');
-            
             stopScanner();
-            
-            // Redirect to the scanned UPI link
             window.location.href = decodedText;
         }
 
         function onScanFailure(error) {
-            // handle scan failure, usually better to ignore and keep scanning.
-            // for example:
-            // console.warn(`Code scan error = ${error}`);
-            statusText.innerText = "Scanning... Place QR code in frame.";
+            // Keep scanning silently
         }
     });
 </script>
-
-
-
-
-
-
 
 
 
