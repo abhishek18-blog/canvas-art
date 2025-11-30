@@ -1553,100 +1553,156 @@
     <!-- ========================================== -->
     
     <!-- Consolidated PAYMENT MODAL (single instance) -->
-    <div id="payment-modal" class="fixed inset-0 z-[80] hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300" aria-hidden="true">
-        <div class="bg-[#1F2937] p-8 rounded-2xl shadow-2xl border border-amber-500/30 max-w-md w-full relative modal-enter">
-            <button id="close-payment-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors" aria-label="Close payment dialog">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
 
-            <div class="text-center">
-                <div class="bg-amber-500/20 p-4 rounded-full inline-block mb-4">
-                    <i data-lucide="wallet" class="w-10 h-10 text-amber-400"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-white mb-2">Pay via UPI</h3>
-                <p class="text-gray-400 text-sm mb-6">Choose your UPI app</p>
-                
-                <div class="space-y-3 mb-6">
-                    <a href="intent://pay#Intent;scheme=upi;package=com.phonepe.app;S.browser_fallback_url=https://phonepe.com;end"
-                       data-upi="upi://pay?pa=YOUR_UPI_ID@paytm&pn=ArtisanCanvas&am=1&cu=INR"
-                       class="block w-full bg-[#5f259f] hover:bg-[#4a1c7a] text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 flex items-center justify-between">
-                        <span class="flex items-center"><i data-lucide="smartphone" class="w-5 h-5 mr-3"></i>PhonePe</span>
-                        <i data-lucide="chevron-right" class="w-4 h-4 opacity-70"></i>
-                    </a>
 
-                    <a href="intent://pay#Intent;scheme=upi;package=net.one97.paytm;S.browser_fallback_url=https://paytm.com;end"
-                       data-upi="upi://pay?pa=YOUR_UPI_ID@paytm&pn=ArtisanCanvas&am=1&cu=INR"
-                       class="block w-full bg-[#00b9f1] hover:bg-[#009ac9] text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 flex items-center justify-between">
-                        <span class="flex items-center"><i data-lucide="smartphone" class="w-5 h-5 mr-3"></i>Paytm</span>
-                        <i data-lucide="chevron-right" class="w-4 h-4 opacity-70"></i>
-                    </a>
+<!-- ========================================== -->
+<!-- PAYMENT MODAL - START OF SECTION TO COPY -->
+<!-- ========================================== -->
 
-                    <a href="intent://pay#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=https://pay.google.com;end"
-                       data-upi="upi://pay?pa=deshmukhabhishek370@oksbi&pn=AbhishekDeshmukh&am=0.00&cu=INR"
-                       class="block w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 flex items-center justify-between">
-                        <span class="flex items-center"><i data-lucide="smartphone" class="w-5 h-5 mr-3"></i>Google Pay</span>
-                        <i data-lucide="chevron-right" class="w-4 h-4 opacity-70"></i>
-                    </a>
+<div id="payment-modal" class="fixed inset-0 z-[80] hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300" aria-hidden="true">
+    <div class="bg-[#1F2937] p-8 rounded-2xl shadow-2xl border border-amber-500/30 max-w-md w-full relative modal-enter">
+        <button id="close-payment-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors" aria-label="Close payment dialog">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
 
-                    <a href="intent://pay#Intent;scheme=upi;package=in.org.npci.upiapp;S.browser_fallback_url=https://bhimupi.org.in;end"
-                       data-upi="upi://pay?pa=deshmukhabhishek370@oksbi&pn=AbhishekDeshmukh&am=0.00&cu=INR"
-                       class="block w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 flex items-center justify-between">
-                        <span class="flex items-center"><i data-lucide="smartphone" class="w-5 h-5 mr-3"></i>BHIM</span>
-                        <i data-lucide="chevron-right" class="w-4 h-4 opacity-70"></i>
-                    </a>
-                </div>
+        <div class="text-center">
+            <div class="bg-amber-500/20 p-4 rounded-full inline-block mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wallet"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 1-1 1v2a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V7h15"/></svg>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-2">Pay via UPI</h3>
+            <p class="text-gray-400 text-sm mb-6">Paying <span id="payee-name-display" class="text-amber-400 font-bold">...</span></p>
+            
+            <div class="space-y-3 mb-6">
+                <!-- PhonePe -->
+                <a id="btn-phonepe" href="#" class="block w-full bg-[#5f259f] hover:bg-[#4a1c7a] text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 flex items-center justify-between">
+                    <span class="flex items-center">PhonePe</span>
+                    <span>→</span>
+                </a>
 
-                <div class="text-xs text-gray-500 flex justify-center gap-4">
-                    <span class="flex items-center"><i data-lucide="shield-check" class="w-3 h-3 mr-1 text-green-500"></i>100% Secure</span>
-                    <span class="flex items-center"><i data-lucide="check-circle" class="w-3 h-3 mr-1 text-green-500"></i>Zero Fees</span>
-                </div>
+                <!-- Paytm -->
+                <a id="btn-paytm" href="#" class="block w-full bg-[#00b9f1] hover:bg-[#009ac9] text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 flex items-center justify-between">
+                    <span class="flex items-center">Paytm</span>
+                    <span>→</span>
+                </a>
+
+                <!-- Google Pay (Updated to use Universal Link fallback) -->
+                <a id="btn-gpay" href="#" class="block w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 flex items-center justify-between">
+                    <span class="flex items-center">Google Pay</span>
+                    <span>→</span>
+                </a>
+
+                <!-- BHIM / Generic -->
+                <a id="btn-bhim" href="#" class="block w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 flex items-center justify-between">
+                    <span class="flex items-center">Show All UPI Apps</span>
+                    <span>→</span>
+                </a>
+            </div>
+
+            <div class="text-xs text-gray-500 flex justify-center gap-4">
+                <span class="flex items-center">100% Secure</span>
+                <span class="flex items-center">Zero Fees</span>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-    // CONFIG - Replace with your UPI ID
-    const UPI_deshmukhabhishek370@oksbi = {
-        vpa: 'deshmukhabhishek370@oksbi',
-        name: 'AbhishekDeshmukh',
-        amount: 0.00,
+<script>
+    // ==========================================
+    // ⬇️ EDIT THIS SECTION ONLY ⬇️
+    // ==========================================
+    const UPI_CONFIG = {
+        vpa: 'yourname@upi',         // REPLACE with your UPI ID
+        name: 'Your Business Name',  // REPLACE with your Name
+        amount: '1.00',              // REPLACE with amount (Must be string)
         currency: 'INR'
     };
+    // ==========================================
+    // ⬆️ END OF EDIT SECTION ⬆️
+    // ==========================================
 
-    // Intent click handler with fallback and safe modal close
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('a[data-upi]').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.open(this.href, '_blank');
-            });
+        // 1. Sanitize Inputs
+        const safeVPA = UPI_CONFIG.vpa.trim().toLowerCase();
+        const safeName = UPI_CONFIG.name.trim();
+        // Ensure amount has 2 decimal places (Google Pay Requirement)
+        const safeAmount = parseFloat(UPI_CONFIG.amount).toFixed(2); 
+
+        document.getElementById('payee-name-display').textContent = safeName;
+
+        // 2. Construct the Payment Query String
+        // This is the "filling" of the sandwich. Without this, the app opens empty.
+        const paymentQuery = `?pa=${safeVPA}&pn=${encodeURIComponent(safeName)}&am=${safeAmount}&cu=${UPI_CONFIG.currency}`;
+
+        // 3. Define App Packages
+        const apps = {
+            phonepe: {
+                id: 'btn-phonepe',
+                // Standard Intent
+                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.phonepe.app;S.browser_fallback_url=https://phonepe.com;end`
+            },
+            paytm: {
+                id: 'btn-paytm',
+                // Standard Intent
+                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=net.one97.paytm;S.browser_fallback_url=https://paytm.com;end`
+            },
+            gpay: {
+                id: 'btn-gpay',
+                // Google Pay often prefers the raw UPI link format on newer Androids if Intent fails
+                // But we will stick to the intent that includes the query parameters correctly.
+                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=https://pay.google.com;end`
+            },
+            bhim: {
+                id: 'btn-bhim',
+                // Generic Universal Link (Works on almost all phones if specific apps fail)
+                href: `upi://pay${paymentQuery}`
+            }
+        };
+
+        // 4. Update Links
+        Object.values(apps).forEach(app => {
+            const linkElement = document.getElementById(app.id);
+            if (linkElement) {
+                linkElement.setAttribute('href', app.href);
+            }
         });
 
+        // 5. Modal Logic
         const closeBtn = document.getElementById('close-payment-modal');
-        if (closeBtn) {
+        const modal = document.getElementById('payment-modal');
+        
+        if (closeBtn && modal) {
             closeBtn.addEventListener('click', () => {
-                const modal = document.getElementById('payment-modal');
-                if (modal) {
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex');
-                    document.body.style.overflow = 'auto';
-                }
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
             });
         }
+        
+        window.openPaymentModal = function() {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
     });
-    </script>
+</script>
 
-    <!-- ========================================== -->
-    <!-- END OF PAYMENT MODAL SECTION -->
-    <!-- ========================================== -->
-    <!-- ✅ Payment section ends here. Everything above (from the opening comment to </script>) 
-         can be copied and pasted into other HTML files as a standalone payment feature. -->
-    <!-- ========================================== -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     
-    
-    <!-- Footer -->
       <footer class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white mt-16 border-t-4 border-amber-500/30 shadow-2xl">
     <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row justify-between items-center space-y-8 lg:space-y-0">
