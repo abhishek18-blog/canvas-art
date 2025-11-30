@@ -1544,16 +1544,15 @@
 
 
   
-    <!-- Consolidated PAYMENT MODAL (single instance) -->
-<!-- ========================================== -->
-<!-- PAYMENT MODAL: QR & ENHANCED SCANNER V2 -->
+ <!-- ========================================== -->
+<!-- PAYMENT MODAL: QR, BUTTONS & SCANNER V3 -->
 <!-- ========================================== -->
 
 <!-- Load QR Scanner Library -->
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <div id="payment-modal" class="fixed inset-0 z-[80] hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300" aria-hidden="true">
-    <div class="bg-[#1F2937] p-6 rounded-2xl shadow-2xl border border-amber-500/30 max-w-sm w-full relative modal-enter flex flex-col items-center">
+    <div class="bg-[#1F2937] p-6 rounded-2xl shadow-2xl border border-amber-500/30 max-w-sm w-full relative modal-enter flex flex-col items-center max-h-[90vh] overflow-y-auto">
         
         <!-- Close Button -->
         <button id="close-payment-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors" aria-label="Close payment dialog">
@@ -1561,20 +1560,45 @@
         </button>
 
         <h3 class="text-2xl font-bold text-white mb-1 mt-2">Pay via UPI</h3>
-        <p class="text-gray-400 text-xs mb-6">Paying: <span id="payee-name-display" class="text-amber-400">...</span></p>
+        <p class="text-gray-400 text-xs mb-4">Paying: <span id="payee-name-display" class="text-amber-400">...</span></p>
         
-        <!-- SECTION 1: Static QR View -->
+        <!-- SECTION 1: Static QR & Buttons View -->
         <div id="static-qr-view" class="w-full flex flex-col items-center">
             
             <!-- QR CODE IMAGE -->
-            <div class="bg-white p-2 rounded-lg mb-4 w-56 h-56 flex items-center justify-center shadow-lg ring-4 ring-white/10">
+            <div class="bg-white p-2 rounded-lg mb-2 w-48 h-48 flex items-center justify-center shadow-lg ring-4 ring-white/10">
                 <!-- ⬇️ REPLACE THIS IMAGE SOURCE ⬇️ -->
-                <img src="your-upi-qr-code.png" alt="Payment QR Code" class="w-full h-full object-contain">
+                <img src="qrcode1.png" alt="Payment QR Code" class="w-full h-full object-contain">
             </div>
             
-            <p class="text-gray-400 text-sm text-center mb-6">
-                Scan this QR code using any UPI App<br>to complete your payment.
-            </p>
+            <p class="text-gray-400 text-xs text-center mb-4">Scan with any UPI App</p>
+
+            <!-- Divider -->
+            <div class="flex items-center w-full gap-2 mb-4">
+                <div class="h-px bg-gray-700 flex-1"></div>
+                <span class="text-gray-500 text-[10px] font-bold tracking-wider">OR TAP TO PAY</span>
+                <div class="h-px bg-gray-700 flex-1"></div>
+            </div>
+
+            <!-- DIRECT APP BUTTONS -->
+            <div class="grid grid-cols-2 gap-3 w-full mb-4">
+                <!-- GPay -->
+                <a id="btn-gpay" href="#" class="bg-[#1F2937] border border-gray-600 hover:border-green-500 hover:bg-gray-800 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all group">
+                    <span class="text-sm font-bold group-hover:text-green-400">GPay</span>
+                </a>
+                <!-- PhonePe -->
+                <a id="btn-phonepe" href="#" class="bg-[#1F2937] border border-gray-600 hover:border-[#5f259f] hover:bg-gray-800 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all group">
+                    <span class="text-sm font-bold group-hover:text-[#5f259f]">PhonePe</span>
+                </a>
+                <!-- Paytm -->
+                <a id="btn-paytm" href="#" class="bg-[#1F2937] border border-gray-600 hover:border-[#00b9f1] hover:bg-gray-800 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all group">
+                    <span class="text-sm font-bold group-hover:text-[#00b9f1]">Paytm</span>
+                </a>
+                <!-- BHIM / Other -->
+                <a id="btn-bhim" href="#" class="bg-[#1F2937] border border-gray-600 hover:border-orange-500 hover:bg-gray-800 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all group">
+                    <span class="text-sm font-bold group-hover:text-orange-500">Other</span>
+                </a>
+            </div>
 
             <!-- SCANNER TOGGLE BUTTON -->
             <button id="btn-activate-scanner" class="w-full bg-[#374151] hover:bg-[#4B5563] text-white border border-gray-600 font-medium py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 group">
@@ -1637,16 +1661,51 @@
     // ⬇️ CONFIGURATION ⬇️
     // ==========================================
     const UPI_CONFIG = {
-        name: 'Your Business Name' 
+        vpa: 'deshmukhabhishek370@oksbi',         // 1. REPLACE with your UPI ID
+        name: 'Artisans Canvas',  // 2. REPLACE with your Name
+        amount: '0.00',              // 3. REPLACE with amount
+        currency: 'INR'
     };
     // ==========================================
 
     document.addEventListener('DOMContentLoaded', () => {
-        // 1. Set Display Name
+        // 1. Set Display Name & Sanitize Inputs
         const nameDisplay = document.getElementById('payee-name-display');
-        if(nameDisplay) nameDisplay.textContent = UPI_CONFIG.name;
+        const safeVPA = UPI_CONFIG.vpa.trim().toLowerCase();
+        const safeName = UPI_CONFIG.name.trim();
+        const safeAmount = parseFloat(UPI_CONFIG.amount).toFixed(2);
+        
+        if(nameDisplay) nameDisplay.textContent = safeName;
 
-        // 2. Element References
+        // 2. Generate Payment Links (For Buttons)
+        const tr = Math.floor(Math.random() * 100000000); // Random Transaction ID
+        const paymentQuery = `?pa=${safeVPA}&pn=${encodeURIComponent(safeName)}&am=${safeAmount}&cu=${UPI_CONFIG.currency}&tn=Payment&tr=${tr}`;
+
+        const apps = {
+            gpay: { 
+                id: 'btn-gpay', 
+                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.pn=${safeName};S.tn=Payment;S.browser_fallback_url=https://pay.google.com;end` 
+            },
+            phonepe: { 
+                id: 'btn-phonepe', 
+                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=com.phonepe.app;S.browser_fallback_url=https://phonepe.com;end` 
+            },
+            paytm: { 
+                id: 'btn-paytm', 
+                href: `intent://pay${paymentQuery}#Intent;scheme=upi;package=net.one97.paytm;S.browser_fallback_url=https://paytm.com;end` 
+            },
+            bhim: { 
+                id: 'btn-bhim', 
+                href: `upi://pay${paymentQuery}` // Universal fallback
+            }
+        };
+
+        Object.values(apps).forEach(app => {
+            const btn = document.getElementById(app.id);
+            if (btn) btn.setAttribute('href', app.href);
+        });
+
+        // 3. Element References
         const modal = document.getElementById('payment-modal');
         const closeBtn = document.getElementById('close-payment-modal');
         const staticView = document.getElementById('static-qr-view');
@@ -1662,7 +1721,7 @@
         let html5QrcodeScanner = null;
         let isScanning = false;
 
-        // 3. Modal Functions
+        // 4. Modal Functions
         window.openPaymentModal = function() {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -1675,7 +1734,7 @@
             stopScanner();
         });
 
-        // 4. View Switching
+        // 5. View Switching
         activateScanBtn.addEventListener('click', () => {
             staticView.classList.add('hidden');
             cameraView.classList.remove('hidden');
@@ -1719,7 +1778,7 @@
             updateStatus("Permission Error", "text-red-500");
         }
 
-        // 5. Scanner Logic
+        // 6. Scanner Logic
         function startScanner() {
             if (typeof Html5Qrcode === 'undefined') {
                 updateStatus("Error: Scanner library not loaded.", "text-red-500");
@@ -1814,6 +1873,28 @@
 </script>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
     <!---footer--->
     
