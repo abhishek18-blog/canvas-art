@@ -1543,8 +1543,9 @@
     </div>
 
 
-<!-- ========================================== -->
-<!-- PAYMENT MODAL: QR, CAMERA, UPLOAD & DOWNLOAD -->
+
+    <!-- ========================================== -->
+<!-- PAYMENT MODAL: QR, CAMERA & DOWNLOAD ONLY -->
 <!-- ========================================== -->
 
 <!-- Load QR Scanner Library -->
@@ -1592,17 +1593,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera text-amber-500 group-hover:scale-110 transition-transform"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
                     Open Camera Scanner
                 </button>
-
-                <!-- UPLOAD FROM GALLERY BUTTON -->
-                <button id="btn-upload-qr" class="w-full bg-transparent hover:bg-white/5 text-gray-300 border border-gray-700 hover:border-gray-500 font-medium py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image text-gray-400 group-hover:text-white transition-colors"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                    Scan from Gallery
-                </button>
-                <input type="file" id="qr-input-file" accept="image/*" class="hidden">
             </div>
-            
-            <!-- UPLOAD STATUS MESSAGE -->
-             <p id="upload-status" class="text-xs text-center mt-3 h-4 text-gray-500"></p>
         </div>
 
         <!-- SECTION 2: Camera Scanner (Hidden by default) -->
@@ -1636,7 +1627,7 @@
             </button>
         </div>
         
-        <!-- Hidden div for file scanning -->
+        <!-- Hidden div for file scanning (Not used anymore) -->
         <div id="temp-qr-reader" style="display: none;"></div>
     </div>
 </div>
@@ -1679,11 +1670,7 @@
         const cancelScanBtn = document.getElementById('btn-cancel-scan');
         const retryBtn = document.getElementById('btn-retry-permission');
         
-        // New Buttons
         const downloadBtn = document.getElementById('btn-download-qr');
-        const uploadBtn = document.getElementById('btn-upload-qr');
-        const fileInput = document.getElementById('qr-input-file');
-        const uploadStatus = document.getElementById('upload-status');
         const qrImage = document.getElementById('display-qr-code');
 
         // Status & Overlay
@@ -1692,7 +1679,6 @@
         const scanLine = document.getElementById('scan-line');
         
         let html5QrcodeScanner = null;
-        let fileScanner = null; // Scanner instance for file uploads
         let isScanning = false;
 
         // --- 3. MODAL CONTROLS ---
@@ -1718,82 +1704,7 @@
             document.body.removeChild(link);
         });
 
-        // --- 5. UPLOAD (SCAN FROM GALLERY) FEATURE ---
-        uploadBtn.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', async e => {
-            if (e.target.files.length === 0) return;
-
-            const imageFile = e.target.files[0];
-            uploadStatus.textContent = "Scanning image...";
-            uploadStatus.className = "text-xs text-center mt-3 h-4 text-amber-400 animate-pulse";
-
-            // STRATEGY A: Try Native BarcodeDetector (Chrome/Android) - Much faster
-            if ('BarcodeDetector' in window) {
-                try {
-                    const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
-                    const bitmap = await createImageBitmap(imageFile);
-                    const barcodes = await barcodeDetector.detect(bitmap);
-                    if (barcodes.length > 0) {
-                        const scannedContent = barcodes[0].rawValue;
-                        handleScanResult(scannedContent, "native");
-                        // Reset input so same file can be selected again if needed
-                        fileInput.value = ''; 
-                        return;
-                    }
-                } catch (err) {
-                    console.log("Native scan failed, falling back to library...", err);
-                }
-            }
-
-            // STRATEGY B: Fallback to html5-qrcode library
-            const tempReaderId = "temp-qr-reader";
-            
-            try {
-                // Ensure any previous instance is cleared
-                if (fileScanner) {
-                    await fileScanner.clear().catch(e => console.log("Clear warning:", e));
-                    fileScanner = null;
-                }
-
-                fileScanner = new Html5Qrcode(tempReaderId);
-                
-                // Scan the file
-                const decodedText = await fileScanner.scanFile(imageFile, false);
-                
-                // Cleanup and handle success
-                await fileScanner.clear();
-                fileScanner = null;
-                handleScanResult(decodedText, "library");
-                
-            } catch (err) {
-                // Handle Errors
-                console.error("File scan error", err);
-                
-                // Attempt cleanup
-                if(fileScanner) {
-                    await fileScanner.clear().catch(e => {});
-                    fileScanner = null;
-                }
-
-                uploadStatus.textContent = "Could not detect QR. Try a clearer image.";
-                uploadStatus.className = "text-xs text-center mt-3 h-4 text-red-400";
-            }
-            
-            // Reset input
-            fileInput.value = '';
-        });
-
-        function handleScanResult(decodedText, source) {
-            uploadStatus.textContent = "QR Detected! Redirecting...";
-            uploadStatus.className = "text-xs text-center mt-3 h-4 text-green-400 font-bold";
-            onScanSuccess(decodedText);
-        }
-
-
-        // --- 6. CAMERA SCANNER LOGIC ---
+        // --- 5. CAMERA SCANNER LOGIC ---
         activateScanBtn.addEventListener('click', () => {
             staticView.classList.add('hidden');
             cameraView.classList.remove('hidden');
@@ -1823,7 +1734,7 @@
             staticView.classList.remove('hidden');
             errorOverlay.classList.add('hidden');
             updateStatus("Initializing camera...", "text-amber-400", true);
-            uploadStatus.textContent = ""; // Clear upload status
+            // Removed uploadStatus clearing as upload feature is removed
         }
 
         function updateStatus(text, colorClass, pulse = false) {
@@ -1841,7 +1752,6 @@
                 updateStatus("Error: Scanner library not loaded.", "text-red-500");
                 return;
             }
-            if(html5QrcodeScanner) {} 
 
             html5QrcodeScanner = new Html5Qrcode("reader");
 
@@ -1879,50 +1789,42 @@
         }
 
         function onScanSuccess(decodedText) {
-            // Handle success for both Camera and File
-            
             // 🛑 SMART SANITIZER 🛑
-            // This fixes the "Limit Exceeded" error by cleaning up the link before redirecting.
-            // It removes 'tr', 'tn', 'mc' (which cause Merchant errors) and forces P2P mode.
+            // Fixes "Limit Exceeded" error by cleaning the link before redirecting.
+            // Removes 'tr', 'tn', 'mc', forces P2P mode.
             let safeLink = decodedText;
-            
+
             try {
-                // Only process if it looks like a UPI link
                 if (decodedText.toLowerCase().startsWith('upi://')) {
                     const urlObj = new URL(decodedText);
                     const params = new URLSearchParams(urlObj.search);
-                    
-                    // Reconstruct CLEAN params
+
                     const cleanParams = new URLSearchParams();
                     if(params.has('pa')) cleanParams.append('pa', params.get('pa'));
                     if(params.has('pn')) cleanParams.append('pn', params.get('pn'));
                     if(params.has('am')) cleanParams.append('am', params.get('am'));
-                    
-                    // Force Defaults for Safety
-                    cleanParams.append('cu', 'INR'); 
-                    cleanParams.append('mode', '00'); // Force P2P Mode
 
-                    // IMPORTANT: We purposely DO NOT append 'tr', 'tn', 'mc', 'url', 'sign'
-                    
+                    cleanParams.append('cu', 'INR');
+                    cleanParams.append('mode', '00'); // Force P2P mode
+
                     safeLink = `upi://pay?${cleanParams.toString()}`;
+
                     console.log("Sanitized Link:", safeLink);
                 }
-            } catch (e) {
+            } catch(e) {
                 console.log("Link parsing failed, using original.");
             }
-            
-            // 1. If camera is running, stop it
+
             if (isScanning) {
                 updateStatus("✅ Scanned! Opening...", "text-green-400 font-bold");
                 stopScanner();
             }
 
-            // 2. Redirect logic with SAFE LINK
             setTimeout(() => {
                 window.location.href = safeLink;
             }, 500);
 
-            // 3. Show Fallback Button with SAFE LINK
+            // Show fallback button
             const btnHtml = `
                 <div class="mt-4 animate-bounce text-center w-full flex justify-center">
                     <a href="${safeLink}" class="bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 px-6 rounded-full shadow-lg text-sm flex items-center gap-2">
@@ -1933,19 +1835,17 @@
             `;
             
             if (isScanning) {
-                 statusTextContainer.insertAdjacentHTML('beforeend', btnHtml);
+                statusTextContainer.insertAdjacentHTML('beforeend', btnHtml);
             } else {
-                 const staticContainer = document.getElementById('static-qr-view');
-                 // Remove old button if exists
-                 const existingBtn = staticContainer.querySelector('.animate-bounce');
-                 if(existingBtn) existingBtn.remove();
-                 
-                 staticContainer.insertAdjacentHTML('beforeend', btnHtml);
+                const staticContainer = document.getElementById('static-qr-view');
+                const existingBtn = staticContainer.querySelector('.animate-bounce');
+                if(existingBtn) existingBtn.remove();
+                staticContainer.insertAdjacentHTML('beforeend', btnHtml);
             }
         }
 
         function onScanFailure(error) {
-            // Keep scanning silently
+            // Do nothing, keep scanning silently
         }
     });
 </script>
