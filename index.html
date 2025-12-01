@@ -1544,8 +1544,8 @@
 
 
 
-    
-<!-- ========================================== -->
+
+  <!-- ========================================== -->
 <!-- PAYMENT MODAL: QR, CAMERA, UPLOAD & DOWNLOAD -->
 <!-- ========================================== -->
 
@@ -1691,6 +1691,7 @@
         const scanLine = document.getElementById('scan-line');
         
         let html5QrcodeScanner = null;
+        let fileScanner = null; // Scanner instance for file uploads
         let isScanning = false;
 
         // --- 3. MODAL CONTROLS ---
@@ -1737,6 +1738,8 @@
                     if (barcodes.length > 0) {
                         const scannedContent = barcodes[0].rawValue;
                         handleScanResult(scannedContent, "native");
+                        // Reset input so same file can be selected again if needed
+                        fileInput.value = ''; 
                         return;
                     }
                 } catch (err) {
@@ -1745,32 +1748,41 @@
             }
 
             // STRATEGY B: Fallback to html5-qrcode library
-            // We use a dedicated hidden element to avoid conflicts with camera scanner
             const tempReaderId = "temp-qr-reader";
             
-            // Clean up any existing instance on the temp reader
             try {
-                // Instantiating a new one on the same ID might throw if not cleared.
-                // We trust the library's scanFile static-like behavior but it needs an instance.
-                const html5QrCode = new Html5Qrcode(tempReaderId);
+                // Ensure any previous instance is cleared
+                if (fileScanner) {
+                    await fileScanner.clear().catch(e => console.log("Clear warning:", e));
+                    fileScanner = null;
+                }
+
+                fileScanner = new Html5Qrcode(tempReaderId);
                 
-                html5QrCode.scanFile(imageFile, true)
-                    .then(decodedText => {
-                        html5QrCode.clear();
-                        handleScanResult(decodedText, "library");
-                    })
-                    .catch(err => {
-                        html5QrCode.clear();
-                        uploadStatus.textContent = "No QR code found. Try a clearer image.";
-                        uploadStatus.className = "text-xs text-center mt-3 h-4 text-red-400";
-                        console.error("File scan error", err);
-                    });
-            } catch (error) {
-                 // If instantiation fails (e.g. already exists), we catch it here
-                 console.error("Scanner instantiation error:", error);
-                 uploadStatus.textContent = "Scanner error. Please refresh.";
-                 uploadStatus.className = "text-xs text-center mt-3 h-4 text-red-400";
+                // Scan the file
+                const decodedText = await fileScanner.scanFile(imageFile, false);
+                
+                // Cleanup and handle success
+                await fileScanner.clear();
+                fileScanner = null;
+                handleScanResult(decodedText, "library");
+                
+            } catch (err) {
+                // Handle Errors
+                console.error("File scan error", err);
+                
+                // Attempt cleanup
+                if(fileScanner) {
+                    await fileScanner.clear().catch(e => {});
+                    fileScanner = null;
+                }
+
+                uploadStatus.textContent = "Could not detect QR. Try a clearer image.";
+                uploadStatus.className = "text-xs text-center mt-3 h-4 text-red-400";
             }
+            
+            // Reset input
+            fileInput.value = '';
         });
 
         function handleScanResult(decodedText, source) {
@@ -1868,25 +1880,51 @@
         function onScanSuccess(decodedText) {
             // Handle success for both Camera and File
             
+            // 🛑 SMART SANITIZER 🛑
+            // This fixes the "Limit Exceeded" error by cleaning up the link before redirecting.
+            // It removes 'tr', 'tn', 'mc' (which cause Merchant errors) and forces P2P mode.
+            let safeLink = decodedText;
+            
+            try {
+                // Only process if it looks like a UPI link
+                if (decodedText.toLowerCase().startsWith('upi://')) {
+                    const urlObj = new URL(decodedText);
+                    const params = new URLSearchParams(urlObj.search);
+                    
+                    // Reconstruct CLEAN params
+                    const cleanParams = new URLSearchParams();
+                    if(params.has('pa')) cleanParams.append('pa', params.get('pa'));
+                    if(params.has('pn')) cleanParams.append('pn', params.get('pn'));
+                    if(params.has('am')) cleanParams.append('am', params.get('am'));
+                    
+                    // Force Defaults for Safety
+                    cleanParams.append('cu', 'INR'); 
+                    cleanParams.append('mode', '00'); // Force P2P Mode
+
+                    // IMPORTANT: We purposely DO NOT append 'tr', 'tn', 'mc', 'url', 'sign'
+                    
+                    safeLink = `upi://pay?${cleanParams.toString()}`;
+                    console.log("Sanitized Link:", safeLink);
+                }
+            } catch (e) {
+                console.log("Link parsing failed, using original.");
+            }
+            
             // 1. If camera is running, stop it
             if (isScanning) {
                 updateStatus("✅ Scanned! Opening...", "text-green-400 font-bold");
                 stopScanner();
             }
 
-            // 2. Redirect logic
+            // 2. Redirect logic with SAFE LINK
             setTimeout(() => {
-                window.location.href = decodedText;
+                window.location.href = safeLink;
             }, 500);
 
-            // 3. Show Fallback Button (Ensure user can click if redirect blocks)
-            // We append this to the active view's status area. 
-            // If in static view (file upload), we append to statusTextContainer (which is hidden in static view).
-            // So we need to check where to append.
-            
+            // 3. Show Fallback Button with SAFE LINK
             const btnHtml = `
                 <div class="mt-4 animate-bounce text-center w-full flex justify-center">
-                    <a href="${decodedText}" class="bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 px-6 rounded-full shadow-lg text-sm flex items-center gap-2">
+                    <a href="${safeLink}" class="bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 px-6 rounded-full shadow-lg text-sm flex items-center gap-2">
                         <span>Tap to Open Link</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                     </a>
@@ -1896,12 +1934,12 @@
             if (isScanning) {
                  statusTextContainer.insertAdjacentHTML('beforeend', btnHtml);
             } else {
-                 // For file upload, append to static view
                  const staticContainer = document.getElementById('static-qr-view');
-                 // Check if button already exists to avoid duplicates
-                 if(!staticContainer.innerHTML.includes('Tap to Open Link')) {
-                     staticContainer.insertAdjacentHTML('beforeend', btnHtml);
-                 }
+                 // Remove old button if exists
+                 const existingBtn = staticContainer.querySelector('.animate-bounce');
+                 if(existingBtn) existingBtn.remove();
+                 
+                 staticContainer.insertAdjacentHTML('beforeend', btnHtml);
             }
         }
 
@@ -1910,8 +1948,6 @@
         }
     });
 </script>
-
-
     
     <!---footer--->
     
