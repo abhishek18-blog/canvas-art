@@ -1543,7 +1543,9 @@
     </div>
 
 
-    <!-- ========================================== -->
+
+    
+<!-- ========================================== -->
 <!-- PAYMENT MODAL: QR, CAMERA, UPLOAD & DOWNLOAD -->
 <!-- ========================================== -->
 
@@ -1632,6 +1634,9 @@
                 Cancel & Go Back
             </button>
         </div>
+        
+        <!-- Hidden div for file scanning -->
+        <div id="temp-qr-reader" style="display: none;"></div>
     </div>
 </div>
 
@@ -1652,7 +1657,7 @@
     // ⬇️ CONFIGURATION ⬇️
     // ==========================================
     const UPI_CONFIG = {
-        name: ' Artisans Canvas'  // 1. Display Name
+        name: 'Artisans Canvas'  // 1. Display Name
     };
     // ==========================================
 
@@ -1716,30 +1721,63 @@
             fileInput.click();
         });
 
-        fileInput.addEventListener('change', e => {
+        fileInput.addEventListener('change', async e => {
             if (e.target.files.length === 0) return;
 
             const imageFile = e.target.files[0];
             uploadStatus.textContent = "Scanning image...";
             uploadStatus.className = "text-xs text-center mt-3 h-4 text-amber-400 animate-pulse";
 
-            // Use html5-qrcode to scan the file
-            // Note: we create a temporary scanner instance just for this file
-            const html5QrCode = new Html5Qrcode("reader"); 
+            // STRATEGY A: Try Native BarcodeDetector (Chrome/Android) - Much faster
+            if ('BarcodeDetector' in window) {
+                try {
+                    const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+                    const bitmap = await createImageBitmap(imageFile);
+                    const barcodes = await barcodeDetector.detect(bitmap);
+                    if (barcodes.length > 0) {
+                        const scannedContent = barcodes[0].rawValue;
+                        handleScanResult(scannedContent, "native");
+                        return;
+                    }
+                } catch (err) {
+                    console.log("Native scan failed, falling back to library...", err);
+                }
+            }
 
-            html5QrCode.scanFile(imageFile, true)
-                .then(decodedText => {
-                    // Reuse the success logic
-                    uploadStatus.textContent = "QR Detected! Redirecting...";
-                    uploadStatus.className = "text-xs text-center mt-3 h-4 text-green-400 font-bold";
-                    onScanSuccess(decodedText);
-                })
-                .catch(err => {
-                    uploadStatus.textContent = "No QR code found in image.";
-                    uploadStatus.className = "text-xs text-center mt-3 h-4 text-red-400";
-                    console.error("File scan error", err);
-                });
+            // STRATEGY B: Fallback to html5-qrcode library
+            // We use a dedicated hidden element to avoid conflicts with camera scanner
+            const tempReaderId = "temp-qr-reader";
+            
+            // Clean up any existing instance on the temp reader
+            try {
+                // Instantiating a new one on the same ID might throw if not cleared.
+                // We trust the library's scanFile static-like behavior but it needs an instance.
+                const html5QrCode = new Html5Qrcode(tempReaderId);
+                
+                html5QrCode.scanFile(imageFile, true)
+                    .then(decodedText => {
+                        html5QrCode.clear();
+                        handleScanResult(decodedText, "library");
+                    })
+                    .catch(err => {
+                        html5QrCode.clear();
+                        uploadStatus.textContent = "No QR code found. Try a clearer image.";
+                        uploadStatus.className = "text-xs text-center mt-3 h-4 text-red-400";
+                        console.error("File scan error", err);
+                    });
+            } catch (error) {
+                 // If instantiation fails (e.g. already exists), we catch it here
+                 console.error("Scanner instantiation error:", error);
+                 uploadStatus.textContent = "Scanner error. Please refresh.";
+                 uploadStatus.className = "text-xs text-center mt-3 h-4 text-red-400";
+            }
         });
+
+        function handleScanResult(decodedText, source) {
+            uploadStatus.textContent = "QR Detected! Redirecting...";
+            uploadStatus.className = "text-xs text-center mt-3 h-4 text-green-400 font-bold";
+            onScanSuccess(decodedText);
+        }
 
 
         // --- 6. CAMERA SCANNER LOGIC ---
@@ -1790,7 +1828,6 @@
                 updateStatus("Error: Scanner library not loaded.", "text-red-500");
                 return;
             }
-            // Cleanup just in case
             if(html5QrcodeScanner) {} 
 
             html5QrcodeScanner = new Html5Qrcode("reader");
@@ -1829,34 +1866,42 @@
         }
 
         function onScanSuccess(decodedText) {
-            // Handle both Camera and File Upload success here
+            // Handle success for both Camera and File
             
-            // Stop scanner if it was running (for camera)
+            // 1. If camera is running, stop it
             if (isScanning) {
                 updateStatus("✅ Scanned! Opening...", "text-green-400 font-bold");
                 stopScanner();
             }
 
-            // Redirect logic
+            // 2. Redirect logic
             setTimeout(() => {
                 window.location.href = decodedText;
             }, 500);
 
-            // Fallback button (For file upload flow, we append to body or specific area, 
-            // but for simplicity we reuse the status container logic if it's visible, 
-            // otherwise we just trust the redirect or show an alert if needed)
+            // 3. Show Fallback Button (Ensure user can click if redirect blocks)
+            // We append this to the active view's status area. 
+            // If in static view (file upload), we append to statusTextContainer (which is hidden in static view).
+            // So we need to check where to append.
+            
+            const btnHtml = `
+                <div class="mt-4 animate-bounce text-center w-full flex justify-center">
+                    <a href="${decodedText}" class="bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 px-6 rounded-full shadow-lg text-sm flex items-center gap-2">
+                        <span>Tap to Open Link</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                </div>
+            `;
             
             if (isScanning) {
-                // If we are in camera view, show button there
-                const btnHtml = `
-                    <div class="mt-4 animate-bounce">
-                        <a href="${decodedText}" class="bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 px-6 rounded-full shadow-lg text-sm flex items-center gap-2">
-                            <span>Tap to Open Link</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                        </a>
-                    </div>
-                `;
-                statusTextContainer.insertAdjacentHTML('beforeend', btnHtml);
+                 statusTextContainer.insertAdjacentHTML('beforeend', btnHtml);
+            } else {
+                 // For file upload, append to static view
+                 const staticContainer = document.getElementById('static-qr-view');
+                 // Check if button already exists to avoid duplicates
+                 if(!staticContainer.innerHTML.includes('Tap to Open Link')) {
+                     staticContainer.insertAdjacentHTML('beforeend', btnHtml);
+                 }
             }
         }
 
@@ -1865,12 +1910,6 @@
         }
     });
 </script>
-
-
-
-
-
-
 
 
     
