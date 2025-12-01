@@ -202,13 +202,6 @@
     
     <style>
         /* --- CUSTOM STYLES: PREMIUM DARK THEME --- */
-                /* Notification Button styled to match your gold/dark theme */
-#notifyButton {
-  @apply px-6 py-3 rounded-xl font-bold bg-amber-400 text-gray-900 shadow-lg shadow-amber-500/50 transition duration-300 hover:bg-amber-600 hover:shadow-amber-600/70 cursor-pointer;
-}
-
-
-
         
         body {
             /* Deep Charcoal background */
@@ -265,6 +258,13 @@
         /* Hide scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+
+        /* Notification Button styled to match your gold/dark theme */
+notifyButton {
+  @apply px-6 py-3 rounded-xl font-bold bg-amber-400 text-gray-900 shadow-lg shadow-amber-500/50 transition duration-300 hover:bg-amber-600 hover:shadow-amber-600/70 cursor-pointer;
+}
+
     </style>
 </head>
 <body class="font-sans antialiased">
@@ -1452,7 +1452,6 @@
             </div>
 
 
-notifyUserOfUpload(); 
 
 
 
@@ -1555,6 +1554,7 @@ notifyUserOfUpload();
                 </div>
             </div>
         </section>
+        
     </main>
 
     <!-- Fullscreen Image Modal -->
@@ -1911,6 +1911,11 @@ document.getElementById('notifyButton').addEventListener('click', () => {
   notifyUserOfUpload();
 });
 //end of new change
+
+
+
+    notifyUserOfUpload();  // Trigger notification after successful upload
+
 </script>
 
 
