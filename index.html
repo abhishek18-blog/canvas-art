@@ -1542,8 +1542,9 @@
         <img id="modal-image" src="" alt="Full View" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl border border-gray-700">
     </div>
 
-<!-- ========================================== -->
-<!-- PAYMENT MODAL: QR & SCANNER ONLY -->
+
+    <!-- ========================================== -->
+<!-- PAYMENT MODAL: QR, CAMERA, UPLOAD & DOWNLOAD -->
 <!-- ========================================== -->
 
 <!-- Load QR Scanner Library -->
@@ -1563,21 +1564,42 @@
         <!-- SECTION 1: Static QR View -->
         <div id="static-qr-view" class="w-full flex flex-col items-center">
             
-            <!-- QR CODE IMAGE -->
-            <div class="bg-white p-2 rounded-lg mb-4 w-56 h-56 flex items-center justify-center shadow-lg ring-4 ring-white/10">
-                <!-- ⬇️ REPLACE THIS IMAGE SOURCE ⬇️ -->
-                <img src="qrcode1.png" alt="Payment QR Code" class="w-full h-full object-contain">
+            <!-- QR CODE IMAGE CONTAINER -->
+            <div class="relative group mb-8">
+                <div class="bg-white p-2 rounded-lg w-56 h-56 flex items-center justify-center shadow-lg ring-4 ring-white/10">
+                    <!-- ⬇️ REPLACE THIS IMAGE SOURCE ⬇️ -->
+                    <img id="display-qr-code" src="qrcode1.png" alt="Payment QR Code" class="w-full h-full object-contain">
+                </div>
+                
+                <!-- DOWNLOAD BUTTON (Appears below image) -->
+                <button id="btn-download-qr" class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-amber-500 hover:text-white flex items-center gap-1 transition-colors whitespace-nowrap py-1 px-2 rounded hover:bg-white/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Save QR Image
+                </button>
             </div>
             
             <p class="text-gray-400 text-sm text-center mb-6">
-                Scan this QR code using any UPI App<br>to complete your payment.
+                Scan this QR code to pay.
             </p>
 
-            <!-- SCANNER TOGGLE BUTTON -->
-            <button id="btn-activate-scanner" class="w-full bg-[#374151] hover:bg-[#4B5563] text-white border border-gray-600 font-medium py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 group">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera text-amber-500 group-hover:scale-110 transition-transform"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                Open Camera Scanner
-            </button>
+            <!-- ACTION BUTTONS -->
+            <div class="w-full space-y-3">
+                <!-- CAMERA SCANNER BUTTON -->
+                <button id="btn-activate-scanner" class="w-full bg-[#374151] hover:bg-[#4B5563] text-white border border-gray-600 font-medium py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera text-amber-500 group-hover:scale-110 transition-transform"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                    Open Camera Scanner
+                </button>
+
+                <!-- UPLOAD FROM GALLERY BUTTON -->
+                <button id="btn-upload-qr" class="w-full bg-transparent hover:bg-white/5 text-gray-300 border border-gray-700 hover:border-gray-500 font-medium py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image text-gray-400 group-hover:text-white transition-colors"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                    Scan from Gallery
+                </button>
+                <input type="file" id="qr-input-file" accept="image/*" class="hidden">
+            </div>
+            
+            <!-- UPLOAD STATUS MESSAGE -->
+             <p id="upload-status" class="text-xs text-center mt-3 h-4 text-gray-500"></p>
         </div>
 
         <!-- SECTION 2: Camera Scanner (Hidden by default) -->
@@ -1630,27 +1652,35 @@
     // ⬇️ CONFIGURATION ⬇️
     // ==========================================
     const UPI_CONFIG = {
-        name: 'Artisans Canvas'  // 1. Display Name
+        name: ' Artisans Canvas'  // 1. Display Name
     };
     // ==========================================
 
     document.addEventListener('DOMContentLoaded', () => {
         // --- 1. SETUP DATA ---
         const nameDisplay = document.getElementById('payee-name-display');
-        
-        // Sanitize name for display
         const safeName = UPI_CONFIG.name.trim();
-        
         if(nameDisplay) nameDisplay.textContent = safeName;
 
-        // --- 2. SCANNER & MODAL LOGIC ---
+        // --- 2. ELEMENTS ---
         const modal = document.getElementById('payment-modal');
         const closeBtn = document.getElementById('close-payment-modal');
         const staticView = document.getElementById('static-qr-view');
         const cameraView = document.getElementById('camera-scanner-view');
+        
+        // Buttons
         const activateScanBtn = document.getElementById('btn-activate-scanner');
         const cancelScanBtn = document.getElementById('btn-cancel-scan');
         const retryBtn = document.getElementById('btn-retry-permission');
+        
+        // New Buttons
+        const downloadBtn = document.getElementById('btn-download-qr');
+        const uploadBtn = document.getElementById('btn-upload-qr');
+        const fileInput = document.getElementById('qr-input-file');
+        const uploadStatus = document.getElementById('upload-status');
+        const qrImage = document.getElementById('display-qr-code');
+
+        // Status & Overlay
         const errorOverlay = document.getElementById('camera-error-overlay');
         const statusTextContainer = document.getElementById('scanner-status');
         const scanLine = document.getElementById('scan-line');
@@ -1658,6 +1688,7 @@
         let html5QrcodeScanner = null;
         let isScanning = false;
 
+        // --- 3. MODAL CONTROLS ---
         window.openPaymentModal = function() {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -1670,6 +1701,48 @@
             stopScanner();
         });
 
+        // --- 4. DOWNLOAD FEATURE ---
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.href = qrImage.src;
+            link.download = 'payment-qr-code.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // --- 5. UPLOAD (SCAN FROM GALLERY) FEATURE ---
+        uploadBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', e => {
+            if (e.target.files.length === 0) return;
+
+            const imageFile = e.target.files[0];
+            uploadStatus.textContent = "Scanning image...";
+            uploadStatus.className = "text-xs text-center mt-3 h-4 text-amber-400 animate-pulse";
+
+            // Use html5-qrcode to scan the file
+            // Note: we create a temporary scanner instance just for this file
+            const html5QrCode = new Html5Qrcode("reader"); 
+
+            html5QrCode.scanFile(imageFile, true)
+                .then(decodedText => {
+                    // Reuse the success logic
+                    uploadStatus.textContent = "QR Detected! Redirecting...";
+                    uploadStatus.className = "text-xs text-center mt-3 h-4 text-green-400 font-bold";
+                    onScanSuccess(decodedText);
+                })
+                .catch(err => {
+                    uploadStatus.textContent = "No QR code found in image.";
+                    uploadStatus.className = "text-xs text-center mt-3 h-4 text-red-400";
+                    console.error("File scan error", err);
+                });
+        });
+
+
+        // --- 6. CAMERA SCANNER LOGIC ---
         activateScanBtn.addEventListener('click', () => {
             staticView.classList.add('hidden');
             cameraView.classList.remove('hidden');
@@ -1699,6 +1772,7 @@
             staticView.classList.remove('hidden');
             errorOverlay.classList.add('hidden');
             updateStatus("Initializing camera...", "text-amber-400", true);
+            uploadStatus.textContent = ""; // Clear upload status
         }
 
         function updateStatus(text, colorClass, pulse = false) {
@@ -1716,6 +1790,7 @@
                 updateStatus("Error: Scanner library not loaded.", "text-red-500");
                 return;
             }
+            // Cleanup just in case
             if(html5QrcodeScanner) {} 
 
             html5QrcodeScanner = new Html5Qrcode("reader");
@@ -1754,24 +1829,35 @@
         }
 
         function onScanSuccess(decodedText) {
-            if (!isScanning) return; 
+            // Handle both Camera and File Upload success here
+            
+            // Stop scanner if it was running (for camera)
+            if (isScanning) {
+                updateStatus("✅ Scanned! Opening...", "text-green-400 font-bold");
+                stopScanner();
+            }
 
-            updateStatus("✅ Scanned! Opening...", "text-green-400 font-bold");
-            stopScanner(); 
-
+            // Redirect logic
             setTimeout(() => {
                 window.location.href = decodedText;
             }, 500);
 
-            const btnHtml = `
-                <div class="mt-4 animate-bounce">
-                    <a href="${decodedText}" class="bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 px-6 rounded-full shadow-lg text-sm flex items-center gap-2">
-                        <span>Tap to Open Link</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                    </a>
-                </div>
-            `;
-            statusTextContainer.insertAdjacentHTML('beforeend', btnHtml);
+            // Fallback button (For file upload flow, we append to body or specific area, 
+            // but for simplicity we reuse the status container logic if it's visible, 
+            // otherwise we just trust the redirect or show an alert if needed)
+            
+            if (isScanning) {
+                // If we are in camera view, show button there
+                const btnHtml = `
+                    <div class="mt-4 animate-bounce">
+                        <a href="${decodedText}" class="bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 px-6 rounded-full shadow-lg text-sm flex items-center gap-2">
+                            <span>Tap to Open Link</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        </a>
+                    </div>
+                `;
+                statusTextContainer.insertAdjacentHTML('beforeend', btnHtml);
+            }
         }
 
         function onScanFailure(error) {
@@ -1779,6 +1865,13 @@
         }
     });
 </script>
+
+
+
+
+
+
+
 
     
     <!---footer--->
