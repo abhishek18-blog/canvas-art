@@ -261,9 +261,7 @@
 
 
         /* Notification Button styled to match your gold/dark theme */
-notifyButton {
-  @apply px-6 py-3 rounded-xl font-bold bg-amber-400 text-gray-900 shadow-lg shadow-amber-500/50 transition duration-300 hover:bg-amber-600 hover:shadow-amber-600/70 cursor-pointer;
-}
+
 
     </style>
 </head>
@@ -1876,45 +1874,6 @@ notifyButton {
 
 
 
-    //new change
-function notifyUserOfUpload() {
-  if (!("Notification" in window)) {
-    alert("This browser does not support desktop notifications.");
-    return;
-  }
-  if (Notification.permission === "granted") {
-    showUploadNotification();
-  } else if (Notification.permission !== "denied") {
-    Notification.requestPermission().then(permission => {
-      if (permission === "granted") {
-        showUploadNotification();
-      }
-    });
-  }
-}
-
-function showUploadNotification() {
-  const notification = new Notification("New Art Uploaded!", {
-    body: "New cards/pics have been added to the gallery. Check them out!",
-    icon: "https://via.placeholder.com/80" 
-  });
-  setTimeout(() => notification.close(), 5000);
-  notification.onclick = () => {
-    window.focus();
-    notification.close();
-  };
-}
-
-
-    // Attach click handler to notifyButton
-document.getElementById('notifyButton').addEventListener('click', () => {
-  notifyUserOfUpload();
-});
-//end of new change
-
-
-
-    notifyUserOfUpload();  // Trigger notification after successful upload
 
 </script>
 
