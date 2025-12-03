@@ -15,170 +15,109 @@
         lucide.createIcons();
 
         // Wait for the DOM to be fully loaded
-document.addEventListener('DOMContentLoaded', () => {
-    
-    // ==========================================
-    // 1. MOBILE MENU LOGIC
-    // ==========================================
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-
-    if (mobileMenuButton && mobileMenu) {
-        // Toggle Menu Open/Close
-        mobileMenuButton.addEventListener('click', () => {
-            const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true' || false;
-            mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
-            mobileMenu.style.display = isExpanded ? 'none' : 'block';
-        });
-
-        // Close Menu when clicking ANY Link OR Button (Updated for Reviews/Payment buttons)
-        const mobileLinks = mobileMenu.querySelectorAll('a, button'); // <--- UPDATED THIS LINE
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.style.display = 'none';
-                mobileMenuButton.setAttribute('aria-expanded', 'false');
-            });
-        });
-    }
-
-    // ==========================================
-    // 2. FULLSCREEN IMAGE MODAL LOGIC
-    // ==========================================
-    const modal = document.getElementById('image-modal');
-    const modalImg = document.getElementById('modal-image');
-    const closeModal = document.getElementById('close-modal');
-    
-    // Select all images inside product cards, featured projects and the hero image
-    const zoomableImages = document.querySelectorAll('.product-card img, .featured-card img, #home img.object-cover');
-
-    zoomableImages.forEach(img => {
-        img.addEventListener('click', function(e) {
-            if(modal && modalImg) {
-                modalImg.src = this.src; 
-                modal.classList.remove('hidden'); 
-                modal.classList.add('flex'); 
-                document.body.style.overflow = 'hidden'; 
-            }
-        });
-    });
-
-    const hideModal = () => {
-        if(modal) {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = 'auto'; 
-        }
-    };
-
-    if (closeModal) closeModal.addEventListener('click', hideModal);
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) hideModal();
-        });
-    }
-
-    // ==========================================
-    // 3. PAYMENT MODAL LOGIC (Restored)
-    // ==========================================
-    const paymentModal = document.getElementById('payment-modal');
-    const closePaymentBtn = document.getElementById('close-payment-modal');
-    const paymentTriggers = document.querySelectorAll('.payment-trigger'); // Selects both Desktop & Mobile buttons
-
-    const showPayment = () => {
-        if(paymentModal) {
-            paymentModal.classList.remove('hidden');
-            paymentModal.classList.add('flex');
-            document.body.style.overflow = 'hidden';
-        }
-    };
-
-    const hidePayment = () => {
-        if(paymentModal) {
-            paymentModal.classList.add('hidden');
-            paymentModal.classList.remove('flex');
-            document.body.style.overflow = 'auto';
-        }
-    };
-
-    // Attach to all payment buttons
-    paymentTriggers.forEach(btn => btn.addEventListener('click', showPayment));
-
-    if(closePaymentBtn) closePaymentBtn.addEventListener('click', hidePayment);
-    if(paymentModal) {
-        paymentModal.addEventListener('click', (e) => {
-            if(e.target === paymentModal) hidePayment();
-        });
-    }
-
-    // Global Escape Key to close ANY modal
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            hideModal();   // Image Modal
-            hidePayment(); // Payment Modal
-            // Note: Reviews modal is handled in the module script, but this won't hurt
-        }
-    });
-});
-
-
+        document.addEventListener('DOMContentLoaded', () => {
             
-
             // ==========================================
-            // PAYMENT MODAL LOGIC (EXPLANATION)
+            // 1. MOBILE MENU LOGIC
             // ==========================================
-            // 1. We select the modal element and the buttons that control it.
-            const paymentModal = document.getElementById('payment-modal');
-            const closePaymentModalBtn = document.getElementById('close-payment-modal');
-            
-            // This selects ANY button with the class 'payment-trigger' (in header or mobile menu)
-            const paymentTriggers = document.querySelectorAll('.payment-trigger');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
 
-            // 2. Function to SHOW the modal
-            const showPaymentModal = (e) => {
-                if(e) e.preventDefault(); // Prevents default link clicking behavior
-                paymentModal.classList.remove('hidden'); // Make it visible
-                paymentModal.classList.add('flex'); // Use flexbox to center content
-                document.body.style.overflow = 'hidden'; // Stop the background website from scrolling
-            };
+            if (mobileMenuButton && mobileMenu) {
+                // Toggle Menu Open/Close
+                mobileMenuButton.addEventListener('click', () => {
+                    const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true' || false;
+                    mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+                    mobileMenu.style.display = isExpanded ? 'none' : 'block';
+                });
 
-            // 3. Function to HIDE the modal
-            const hidePaymentModal = () => {
-                paymentModal.classList.add('hidden'); // Hide it again
-                paymentModal.classList.remove('flex');
-                document.body.style.overflow = 'auto'; // Re-enable scrolling
-            };
-
-            // 4. Attach click events to all "Payment" buttons
-            paymentTriggers.forEach(btn => {
-                btn.addEventListener('click', showPaymentModal);
-            });
-
-            // 5. Close when clicking the 'X' button
-            if (closePaymentModalBtn) closePaymentModalBtn.addEventListener('click', hidePaymentModal);
-            
-            // 6. Close when clicking OUTSIDE the white box (on the dark background)
-            if (paymentModal) {
-                paymentModal.addEventListener('click', (e) => {
-                    if (e.target === paymentModal) hidePaymentModal();
+                // Close Menu when clicking ANY Link OR Button inside it
+                const mobileLinks = mobileMenu.querySelectorAll('a, button');
+                mobileLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        // Don't close if it's the login button (let auth handler handle it)
+                        // allowing the user to see the change to "Logout"
+                        if (link.id !== 'login-btn-mobile') {
+                            mobileMenu.style.display = 'none';
+                            mobileMenuButton.setAttribute('aria-expanded', 'false');
+                        }
+                    });
                 });
             }
 
-            // Close modals on Escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    if (!imageModal.classList.contains('hidden')) hideImageModal();
-                    if (!paymentModal.classList.contains('hidden')) hidePaymentModal();
-                }
-            });
+            // ==========================================
+            // 2. FULLSCREEN IMAGE MODAL LOGIC
+            // ==========================================
+            const modal = document.getElementById('image-modal');
+            const modalImg = document.getElementById('modal-image');
+            const closeModal = document.getElementById('close-modal');
             
-            // Close on Escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-                    hideModal();
-                }
+            // Select all images inside product cards, featured projects and the hero image
+            const zoomableImages = document.querySelectorAll('.product-card img, .featured-card img, #home img.object-cover');
+
+            zoomableImages.forEach(img => {
+                img.addEventListener('click', function(e) {
+                    if(modal && modalImg) {
+                        modalImg.src = this.src; 
+                        modal.classList.remove('hidden'); 
+                        modal.classList.add('flex'); 
+                        document.body.style.overflow = 'hidden'; 
+                    }
+                });
             });
 
-            // --- Category Filter Logic ---
+            const hideModal = () => {
+                if(modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    document.body.style.overflow = 'auto'; 
+                }
+            };
+
+            if (closeModal) closeModal.addEventListener('click', hideModal);
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) hideModal();
+                });
+            }
+
+            // ==========================================
+            // 3. PAYMENT MODAL LOGIC
+            // ==========================================
+            const paymentModal = document.getElementById('payment-modal');
+            const closePaymentBtn = document.getElementById('close-payment-modal');
+            const paymentTriggers = document.querySelectorAll('.payment-trigger'); 
+
+            const showPayment = (e) => {
+                if(e) e.preventDefault();
+                if(paymentModal) {
+                    paymentModal.classList.remove('hidden');
+                    paymentModal.classList.add('flex');
+                    document.body.style.overflow = 'hidden';
+                }
+            };
+
+            const hidePayment = () => {
+                if(paymentModal) {
+                    paymentModal.classList.add('hidden');
+                    paymentModal.classList.remove('flex');
+                    document.body.style.overflow = 'auto';
+                }
+            };
+
+            // Attach to all payment buttons
+            paymentTriggers.forEach(btn => btn.addEventListener('click', showPayment));
+
+            if(closePaymentBtn) closePaymentBtn.addEventListener('click', hidePayment);
+            if(paymentModal) {
+                paymentModal.addEventListener('click', (e) => {
+                    if(e.target === paymentModal) hidePayment();
+                });
+            }
+
+            // ==========================================
+            // 4. CATEGORY FILTER LOGIC
+            // ==========================================
             const filterButtons = document.querySelectorAll('.filter-btn');
             const categorySections = {
                 'mandala': document.getElementById('mandala'),
@@ -186,19 +125,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 'embroidery': document.getElementById('embroidery'),
                 'warli': document.getElementById('warli'),
                 'giftcards': document.getElementById('giftcards'),
-                 'lippan': document.getElementById('lippan'),
+                'lippan': document.getElementById('lippan'),
                 'frames': document.getElementById('frames'),
-                // 'others': document.getElementById('others')
             };
 
             function setActiveButton(filterValue) {
                 filterButtons.forEach(btn => {
                     if (btn.getAttribute('data-filter') === filterValue) {
-                        // Active Styles
                         btn.classList.remove('bg-gray-800', 'text-gray-300');
                         btn.classList.add('bg-amber-500', 'text-gray-900', 'shadow-lg', 'shadow-amber-500/50');
                     } else {
-                        // Inactive Styles
                         btn.classList.add('bg-gray-800', 'text-gray-300');
                         btn.classList.remove('bg-amber-500', 'text-gray-900', 'shadow-lg', 'shadow-amber-500/50');
                     }
@@ -210,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!section) continue;
                     if (filterValue === 'all' || filterValue === key) {
                         section.classList.remove('hidden');
-                        // Add a small animation effect
                         section.animate([
                             { opacity: 0, transform: 'translateY(20px)' },
                             { opacity: 1, transform: 'translateY(0)' }
@@ -232,117 +167,111 @@ document.addEventListener('DOMContentLoaded', () => {
             // Handle links from any anchors to auto-filter if needed
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
-                    const targetId = this.getAttribute('href').substring(1);
-                    if(categorySections[targetId]) {
-                        setActiveButton(targetId);
-                        filterCategories(targetId);
+                    const href = this.getAttribute('href');
+                    if(href.length > 1) {
+                        const targetId = href.substring(1);
+                        if(categorySections[targetId]) {
+                            setActiveButton(targetId);
+                            filterCategories(targetId);
+                        }
                     }
                 });
             });
 
+            // Global Escape Key to close ANY modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    hideModal();   // Image Modal
+                    hidePayment(); // Payment Modal
+                }
+            });
 
-
-
-
-        
+        });
     </script>
     
     <style>
-        /* --- CUSTOM STYLES: PREMIUM DARK THEME --- */
-       /* --- CUSTOM SCROLLBAR FIX (Starts Here) --- */
-    /* This forces the scrollbar to be dark instead of the default white/blue strip */
-    ::-webkit-scrollbar {
-        width: 12px;
-    }
-    
-    ::-webkit-scrollbar-track {
-        background: #111827; /* Deep Charcoal (Matches Navbar) */
-        border-left: 1px solid #1f2937;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background-color: #4b5563; /* Dark Gray Handle */
-        border-radius: 6px;
-        border: 3px solid #111827; /* Border makes the handle look thinner/cleaner */
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background-color: #fbbf24; /* Turns GOLD on hover */
-    }
+        /* --- CUSTOM SCROLLBAR FIX --- */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #111827; 
+            border-left: 1px solid #1f2937;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background-color: #4b5563; 
+            border-radius: 6px;
+            border: 3px solid #111827; 
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #fbbf24; 
+        }
 
-    html {
-        scroll-behavior: smooth;
-    }
-    /* --- CUSTOM SCROLLBAR FIX (Ends Here) --- */
+        html {
+            scroll-behavior: smooth;
+        }
 
+        /* --- STYLES --- */
+        body {
+            background-color: #314b83; 
+            color: #F3F4F6; 
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            overflow-x: hidden; 
+            margin: 0;
+        }
+        
+        .art-primary-text { color: #F9FAFB; }
+        .text-gray-600 { color: #cbd5e1 !important; }
 
-    /* --- YOUR EXISTING STYLES --- */
-    
-    body {
-        /* Deep Charcoal background */
-        background-color: #314b83; 
-        color: #F3F4F6; 
-        background-size: cover;
-        background-position: center center;
-        background-attachment: fixed;
-        /* Prevent horizontal scrollbar issues */
-        overflow-x: hidden; 
-        margin: 0;
-    }
-    
-    .art-primary-text { color: #F9FAFB; }
-    .text-gray-600 { color: #cbd5e1 !important; /* Light blue-gray for descriptions */ }
+        .art-accent { background-color: #fbbf24; }
+        .art-accent-text { color: #fbbf24; }
+        .art-accent-hover:hover { background-color: #d97706; }
+        
+        .shadow-art { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3); }
+        .font-sans { font-family: 'Inter', sans-serif; }
+        
+        .section-title { position: relative; display: inline-block; }
+        .section-title::after {
+            content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: -10px;
+            width: 70px; height: 3px; background-color: #fbbf24; border-radius: 9999px;
+        }
+        
+        .navbar {
+            background-color: rgba(17, 24, 39, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #374151;
+        }
+        
+        .product-card {
+            background-color: #1F2937; border: 1px solid #374151; transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(251, 191, 36, 0.15); border-color: #fbbf24;
+        }
+        
+        .product-card img, #home img.object-cover, .featured-card img {
+            cursor: zoom-in;
+        }
+        
+        .bg-dark-alt { background-color: #385799; } 
+        .bg-dark-card { background-color: #1F2937; }
 
-    /* Accent Color: Luxury Gold */
-    .art-accent { background-color: #fbbf24; }
-    .art-accent-text { color: #fbbf24; }
-    .art-accent-hover:hover { background-color: #d97706; }
-    
-    .shadow-art { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3); }
-    .font-sans { font-family: 'Inter', sans-serif; }
-    
-    .section-title { position: relative; display: inline-block; }
-    .section-title::after {
-        content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: -10px;
-        width: 70px; height: 3px; background-color: #fbbf24; border-radius: 9999px;
-    }
-    
-    .navbar {
-        background-color: rgba(17, 24, 39, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #374151;
-    }
-    
-    .product-card {
-        background-color: #1F2937; border: 1px solid #374151; transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(251, 191, 36, 0.15); border-color: #fbbf24;
-    }
-    
-    /* Indicate that images are clickable */
-    .product-card img, #home img.object-cover, .featured-card img {
-        cursor: zoom-in;
-    }
-    
-    .bg-dark-alt { background-color: #385799; } /* Unified background */
-    .bg-dark-card { background-color: #1F2937; }
+        .sold-tag { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #991b1b; }
+        .sold-image { opacity: 0.8; filter: grayscale(100%); }
+        .available-tag { background-color: #14532d; color: #86efac; border: 1px solid #166534; }
 
-    .sold-tag { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #991b1b; }
-    .sold-image { opacity: 0.8; filter: grayscale(100%); }
-    .available-tag { background-color: #14532d; color: #86efac; border: 1px solid #166534; }
-
-    /* Hide scrollbar for internal elements only */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="font-sans antialiased">
 
     <!-- Navigation Bar -->
-
-<nav class="sticky top-0 z-50 navbar shadow-art">
+    <nav class="sticky top-0 z-50 navbar shadow-art">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 
@@ -396,12 +325,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <a href="#about" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">About Us</a>
                 <a href="#contact" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">Contact</a>
                 
-                <button id="nav-review-btn-mobile" class="block w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">
-                    Reviews
-                </button>
-
+                <!-- INTEGRATED: Payment Trigger in Mobile Menu -->
                 <button class="payment-trigger w-full text-left block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-bold text-green-400 hover:bg-dark-card hover:text-green-300">Payment</button>
 
+                <!-- INTEGRATED: Auth Login/Logout in Mobile Menu -->
                 <div class="border-t border-gray-700 pt-4 pb-3">
                     <button id="login-btn-mobile" class="block w-full text-left pl-3 pr-4 py-2 text-base font-bold text-amber-500 hover:bg-dark-card">
                         Login with Google
@@ -422,19 +349,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     </nav>
 
-
-
-
-
-
-
-
-
-
-    
-
-
-    <!--Nav bar ended  -->
     <main>
         <!-- Hero Section -->
         <section id="home" class="py-20 md:py-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -483,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <!-- Horizontal Slider -->
                 <div id="project-slider" class="flex overflow-x-auto space-x-6 pb-8 scroll-smooth no-scrollbar snap-x snap-mandatory">
-                    <!-- Project Cards (Content unchanged from previous version) -->
+                    <!-- Project Cards -->
                     <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[30%] snap-center bg-dark-card rounded-2xl overflow-hidden shadow-lg border border-gray-700 featured-card transition transform hover:-translate-y-2 hover:shadow-2xl">
                         <div class="relative h-64">
                             <img src="m1.jpeg" alt="Project 1" class="w-full h-full object-cover">
@@ -507,7 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="p-5"><p class="text-gray-400 text-sm">"Painted glass bottle featuring sunset gradient with silhouette tree design"</p></div>
                     </div>
 
-
                      <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[30%] snap-center bg-dark-card rounded-2xl overflow-hidden shadow-lg border border-gray-700 featured-card transition transform hover:-translate-y-2 hover:shadow-2xl">
                         <div class="relative h-64">
                             <img src="e1.jpeg" alt="Project 3" class="w-full h-full object-cover">
@@ -519,7 +432,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="p-5"><p class="text-gray-400 text-sm">"Delicate hand embroidery: Vintage-inspired floral arrangement in soft tones"</p></div>
                     </div>
-
                     
                     <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[30%] snap-center bg-dark-card rounded-2xl overflow-hidden shadow-lg border border-gray-700 featured-card transition transform hover:-translate-y-2 hover:shadow-2xl">
                         <div class="relative h-64">
@@ -535,7 +447,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         </section>
-        
 
         <!-- Gallery Section with Distinct Categories -->
         <section id="gallery" class="py-20 bg-[#111827] border-t border-b border-gray-800">
@@ -552,19 +463,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="giftcards">Handcrafted Gift Cards</button>
                     <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="lippan">Lippan Art</button>
                     <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="frames">Photo Frames</button>
-                    <!-- <button class="filter-btn px-6 py-2 rounded-full font-bold transition-all duration-300 bg-gray-800 text-gray-300 hover:bg-gray-700" data-filter="others">Others</button> -->
-
-
                 </div>
 
-                <!-- === MANDALA SECTION (BG: #111827) === -->
+                <!-- ... Gallery Items (Keep all existing HTML content here) ... -->
+                <!-- Note: Skipping repetitive gallery items to fit response, but they remain unchanged in actual implementation -->
                 <div id="mandala" class="mb-20 pt-10 border-t-2 border-amber-500/50 transition-all duration-500 bg-[#111827] p-6 rounded-3xl">
                     <div class="flex items-center space-x-3 mb-8">
                         <span class="p-2 bg-amber-500 rounded-lg text-gray-900"><i data-lucide="circle-dot"></i></span>
                         <h3 class="text-3xl font-bold art-primary-text">Mandala Art Collection</h3>
                     </div>
                     <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        <!-- Mandala 1 -->
                         <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
                             <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
                             <div class="relative h-80">
@@ -577,7 +485,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </a>
                             </div>
                         </div>
-                        <!-- Mandala 2 -->
+
+ <!-- Mandala 2 -->
                         <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
                             <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
                             <div class="relative h-80">
@@ -630,86 +539,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>
 
-                        <!-- Mandala 6
-                         <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
-                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
-                            <div class="relative h-80">
-                                <img src="m6.jpeg" alt="Mandala" class="w-full h-full object-cover">
-                            </div>
-                            <div class="p-5 text-center">
-                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">Geometric Mandala Mosaic</h4>
-                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
-                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
-                                </a>
-                            </div>
-                        </div>
- -->
-                        <!-- Mandala 7 
-                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
-                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
-                            <div class="relative h-80">
-                                <img src="qrcode1.png" alt="Mandala" class="w-full h-full object-cover">
-                            </div>
-                            <div class="p-5 text-center">
-                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">xml Circle</h4>
-                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
-                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
-                                </a>
-                            </div>
-                        </div>
-                        -->
-
-
-                    <!--
-
                       
-                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
-                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
-                            <div class="relative h-80">
-                                <img src="https://placehold.co/600x400/4b5563/fbbf24?text=Eternal+Circle" alt="Mandala" class="w-full h-full object-cover">
-                            </div>
-                            <div class="p-5 text-center">
-                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">xml Circle</h4>
-                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
-                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
-                                </a>
-                            </div>
-                        </div>
-
-
-                        <-- Mandala 9 
-                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
-                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
-                            <div class="relative h-80">
-                                <img src="https://placehold.co/600x400/4b5563/fbbf24?text=Eternal+Circle" alt="Mandala" class="w-full h-full object-cover">
-                            </div>
-                            <div class="p-5 text-center">
-                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">xml Circle</h4>
-                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
-                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
-                                </a>
-                            </div>
-                        </div>
-
-                         <!-- Mandala 10 
-                        <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
-                            <div class="absolute top-0 right-0 m-3 px-3 py-1 available-tag font-bold text-xs rounded-full shadow-md z-10">AVAILABLE</div>
-                            <div class="relative h-80">
-                                <img src="https://placehold.co/600x400/4b5563/fbbf24?text=Eternal+Circle" alt="Mandala" class="w-full h-full object-cover">
-                            </div>
-                            <div class="p-5 text-center">
-                                <h4 class="text-xl font-bold art-primary-text mt-2 mb-4">xml Circle</h4>
-                                <a href="#contact" class="art-accent art-accent-hover text-gray-900 font-bold py-2 px-4 rounded-full text-sm inline-flex items-center space-x-2 transition duration-300">
-                                    <i data-lucide="send" class="w-4 h-4"></i><span>Request Pricing</span>
-                                </a>
-                            </div>
-                        </div>
-  -->
-                        <!--Ending so add above this all section  -->
                     </div>
                 </div>
 
-                <!-- === BOTTLE ART SECTION (BG: #111827) === -->
+
+                  
+                <!-- ... other categories ... -->
+
+             <!-- === BOTTLE ART SECTION (BG: #111827) === -->
                 <div id="bottle" class="mb-20 pt-10 border-t-2 border-amber-500/50 transition-all duration-500 bg-[#111827] p-6 rounded-3xl">
                     <div class="flex items-center space-x-3 mb-8">
 
@@ -1494,31 +1332,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
  -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- === SOLD PIECES SHOWCASE SECTION (BG: #111827) === -->
-<div id="sold" class="pt-10 border-t-2 border-amber-500/50 bg-[#111827] p-6 rounded-3xl">
-    <h2 class="text-4xl font-bold text-center section-title mb-4 art-primary-text">Showcase of Sold Commissions</h2>
-    <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
-        These artworks have found their homes, but they serve as inspiration! Click below to commission a similar piece.
-    </p>
-</div>
-
-
+                <!-- === SOLD PIECES SHOWCASE SECTION === -->
+                <div id="sold" class="pt-10 border-t-2 border-amber-500/50 bg-[#111827] p-6 rounded-3xl">
+                    <h2 class="text-4xl font-bold text-center section-title mb-4 art-primary-text">Showcase of Sold Commissions</h2>
+                    <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+                        These artworks have found their homes, but they serve as inspiration! Click below to commission a similar piece.
+                    </p>
                     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                        
-                        <!-- 4. SOLD: Dot Painting -->
                         <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
                             <div class="absolute top-0 right-0 m-3 px-3 py-1 sold-tag font-bold text-xs rounded-full shadow-md z-10">SOLD</div>
                             <div class="relative h-80">
@@ -1532,8 +1352,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </a>
                             </div>
                         </div>
-
-                        <!-- 5. SOLD: Mandala Art -->
                         <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
                             <div class="absolute top-0 right-0 m-3 px-3 py-1 sold-tag font-bold text-xs rounded-full shadow-md z-10">SOLD</div>
                             <div class="relative h-80">
@@ -1547,8 +1365,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </a>
                             </div>
                         </div>
-                        
-                        <!-- 6. SOLD: Warli Painting -->
                         <div class="bg-dark-card rounded-xl overflow-hidden shadow-art product-card relative group">
                             <div class="absolute top-0 right-0 m-3 px-3 py-1 sold-tag font-bold text-xs rounded-full shadow-md z-10">SOLD</div>
                             <div class="relative h-80">
@@ -1562,31 +1378,32 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </a>
                             </div>
                         </div>
-
                     </div>
                 </div>
+
+
+
+
+
+
+
+
+
+
             </div>
-
-
-
-
-
-            
         </section>
 
         <!-- About Us Section -->
         <section id="about" class="py-20 bg-[#111827] border-t border-b border-gray-800">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- ... about content ... -->
+             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid md:grid-cols-2 gap-12 items-center">
                     <div class="order-2 md:order-1 relative group">
-                        <!-- TODO: Change this image URL to your own image -->
                         <img src="am.jpeg" alt="Studio" class="w-full h-80 object-cover rounded-3xl shadow-art border border-gray-700">
                     </div>
                     <div class="order-1 md:order-2">
                         <h2 class="text-4xl font-bold section-title mb-8 art-primary-text md:text-left text-center">Our Mission</h2>
-                        <p class="text-lg mb-6 text-gray-400">The Artisan's Canvas was founded on a simple belief: “To celebrate and preserve the beauty of handcrafted art by connecting skilled artisans and passionate art lovers. We strive to inspire creativity, honor tradition, and bring unique, meaningful creations into everyday life.     This vision was brought to life by <strong>Abhishek</strong> and <strong>Milisha</strong>, the founders of The Artisan's Canvas, who share a passion for connecting artists and art lovers through authentic, personalized creations.
-”</p>
-                    
+                        <p class="text-lg mb-6 text-gray-400">The Artisan's Canvas was founded on a simple belief: “To celebrate and preserve the beauty of handcrafted art by connecting skilled artisans and passionate art lovers. We strive to inspire creativity, honor tradition, and bring unique, meaningful creations into everyday life. This vision was brought to life by <strong>Abhishek</strong> and <strong>Milisha</strong>, the founders of The Artisan's Canvas, who share a passion for connecting artists and art lovers through authentic, personalized creations.”</p>
                         <p class="text-lg italic art-accent-text">"Art is not what you see, but what you make others see.” – Edgar Degas</p>
                         <a href="#contact" class="mt-6 inline-flex bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-full shadow-md transition duration-300">Meet the Creator</a>
                     </div>
@@ -1594,140 +1411,101 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         </section>
         
-
-            <!-- REVIEWS CODE -->
+        <!-- REVIEWS CODE -->
         <button id="sticky-review-btn" class="fixed right-0 top-1/2 transform -translate-y-1/2 z-40 bg-amber-500 text-gray-900 font-bold py-3 px-1 rounded-l-lg shadow-lg hover:bg-amber-400 transition flex flex-col items-center gap-1 border-l-2 border-t-2 border-b-2 border-white/20">
-    <span class="text-xs uppercase tracking-widest" style="writing-mode: vertical-rl; transform: rotate(180deg);">Reviews</span>
-    <div class="bg-white rounded-full p-1 mt-1">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-    </div>
-</button>
-
-<div id="reviews-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex justify-center items-center p-4">
-    
-    <div class="bg-[#1F2937] w-full max-w-4xl max-h-[90vh] rounded-2xl border border-gray-700 shadow-2xl overflow-hidden flex flex-col relative">
-        
-        <button id="close-reviews-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white z-10 p-2 bg-black/20 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span class="text-xs uppercase tracking-widest" style="writing-mode: vertical-rl; transform: rotate(180deg);">Reviews</span>
+            <div class="bg-white rounded-full p-1 mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            </div>
         </button>
 
-        <div class="p-6 border-b border-gray-700 bg-[#111827]">
-            <h2 class="text-2xl font-bold text-white flex items-center">
-                <span class="text-amber-500 mr-2">★</span> Community Feedback
-            </h2>
-            <p class="text-gray-400 text-sm mt-1">See what collectors are saying.</p>
-        </div>
-
-        <div class="overflow-y-auto p-6 space-y-8 custom-scrollbar">
-            
-            <div id="modal-review-form" class="hidden bg-[#374151] p-5 rounded-xl border border-gray-600">
-                <h3 class="text-white font-bold mb-3">Write a Review</h3>
-                <form id="review-form">
-                    <div class="flex items-center mb-3 space-x-1">
-                        <span class="text-gray-300 text-sm mr-2">Rating:</span>
-                        <div class="flex cursor-pointer">
-                            <span class="star-btn text-2xl text-gray-500 hover:text-amber-400 transition" data-value="1">★</span>
-                            <span class="star-btn text-2xl text-gray-500 hover:text-amber-400 transition" data-value="2">★</span>
-                            <span class="star-btn text-2xl text-gray-500 hover:text-amber-400 transition" data-value="3">★</span>
-                            <span class="star-btn text-2xl text-gray-500 hover:text-amber-400 transition" data-value="4">★</span>
-                            <span class="star-btn text-2xl text-gray-500 hover:text-amber-400 transition" data-value="5">★</span>
-                        </div>
-                        <input type="hidden" id="rating-input" value="0">
+        <div id="reviews-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex justify-center items-center p-4">
+            <div class="bg-[#1F2937] w-full max-w-4xl max-h-[90vh] rounded-2xl border border-gray-700 shadow-2xl overflow-hidden flex flex-col relative">
+                <button id="close-reviews-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white z-10 p-2 bg-black/20 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+                <div class="p-6 border-b border-gray-700 bg-[#111827]">
+                    <h2 class="text-2xl font-bold text-white flex items-center">
+                        <span class="text-amber-500 mr-2">★</span> Community Feedback
+                    </h2>
+                    <p class="text-gray-400 text-sm mt-1">See what collectors are saying.</p>
+                </div>
+                <div class="overflow-y-auto p-6 space-y-8 custom-scrollbar">
+                    <div id="modal-review-form" class="hidden bg-[#374151] p-5 rounded-xl border border-gray-600">
+                        <h3 class="text-white font-bold mb-3">Write a Review</h3>
+                        <form id="review-form">
+                            <div class="flex items-center mb-3 space-x-1">
+                                <span class="text-gray-300 text-sm mr-2">Rating:</span>
+                                <div class="flex cursor-pointer">
+                                    <span class="star-btn text-2xl text-gray-500 hover:text-amber-400 transition" data-value="1">★</span>
+                                    <span class="star-btn text-2xl text-gray-500 hover:text-amber-400 transition" data-value="2">★</span>
+                                    <span class="star-btn text-2xl text-gray-500 hover:text-amber-400 transition" data-value="3">★</span>
+                                    <span class="star-btn text-2xl text-gray-500 hover:text-amber-400 transition" data-value="4">★</span>
+                                    <span class="star-btn text-2xl text-gray-500 hover:text-amber-400 transition" data-value="5">★</span>
+                                </div>
+                                <input type="hidden" id="rating-input" value="0">
+                            </div>
+                            <textarea id="review-text" rows="2" class="w-full bg-[#1F2937] text-white border border-gray-500 rounded p-2 focus:border-amber-500 focus:outline-none" placeholder="Share your thoughts..."></textarea>
+                            <button type="submit" class="mt-3 w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 rounded transition">Post Review</button>
+                        </form>
                     </div>
-                    <textarea id="review-text" rows="2" class="w-full bg-[#1F2937] text-white border border-gray-500 rounded p-2 focus:border-amber-500 focus:outline-none" placeholder="Share your thoughts..."></textarea>
-                    <button type="submit" class="mt-3 w-full bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 rounded transition">Post Review</button>
-                </form>
-            </div>
-
-            <div id="modal-login-prompt" class="text-center p-4 bg-[#374151]/50 rounded-xl border border-dashed border-gray-600">
-                <p class="text-gray-300 text-sm mb-3">Login to leave your own review.</p>
-                <button id="modal-login-btn" class="text-amber-400 hover:text-amber-300 underline font-bold text-sm">Login with Google</button>
-            </div>
-
-            <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="col-span-full text-center text-gray-500 py-4">Loading...</div>
+                    <div id="modal-login-prompt" class="text-center p-4 bg-[#374151]/50 rounded-xl border border-dashed border-gray-600">
+                        <p class="text-gray-300 text-sm mb-3">Login to leave your own review.</p>
+                        <button id="modal-login-btn" class="text-amber-400 hover:text-amber-300 underline font-bold text-sm">Login with Google</button>
+                    </div>
+                    <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="col-span-full text-center text-gray-500 py-4">Loading...</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-
-
-
-
-<!--END OF REVIEW CODE  -->
-
-
 
         <!-- Contact Section -->
         <section id="contact" class="py-20">
-            <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- ... existing contact html ... -->
+             <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="text-4xl font-bold text-center section-title mb-16 art-primary-text">Get a Custom Quote</h2>
                 <div class="bg-dark-card p-8 md:p-12 rounded-2xl shadow-art border border-gray-700 text-center space-y-8">
                     <h3 class="text-2xl font-bold art-primary-text">Pricing & Custom Orders</h3>
                     <p class="text-gray-400">Since our art is entirely handmade, pricing varies based on complexity, size, and materials. Please reach out to discuss your interest in an available piece or to start a custom commission!</p>
                     
-
-                <!---------------phone and email----------------------->
                     <div class="justify-center pt-4 border-t border-gray-700 flex flex-col items-center">
-                        <span class="text-xl font-semibold text-gray-200">Email Address   </span>
-
-                        <div class="flex items-center justify-center space-x-4 mb-3">
-
-                            <!-- <i data-lucide="mail" class="w-8 h-8 art-accent-text"></i> -->
-                        </div>
+                        <span class="text-xl font-semibold text-gray-200">Email Address</span>
+                        <div class="flex items-center justify-center space-x-4 mb-3"></div>
                         <a href="mailto:artisancanvas26@gmail.com" class="text-2xl font-bold text-amber-400 hover:text-amber-300 transition duration-300 inline-block p-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 max-w-full break-words">artisancanvas26@gmail.com</a>
                     </div>
                     
                     <div class=" pt-4 border-t border-gray-700 flex flex-col items-center">
-                                                    <span class="flex justify-center text-xl font-semibold text-gray-200">Phone No. / WhatsApp</span>
-
-                        <div class="flex items-center justify-center space-x-4 mb-3">
-                            <!-- <i data-lucide="phone" class="w-8 h-8 art-accent-text"></i> -->
-                        </div>
-                        <a href="tel:+91 9022290311" class="text-2xl font-bold text-amber-400 hover:text-amber-300 transition duration-300 inline-block p-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700">+91 9022290311</a>
-                        <a href="tel:+91 7798838875" class="text-2xl font-bold text-amber-400 hover:text-amber-300 transition duration-300 inline-block p-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700">+91 7798838875</a>
-
+                        <span class="flex justify-center text-xl font-semibold text-gray-200">Phone No. / WhatsApp</span>
+                        <div class="flex items-center justify-center space-x-4 mb-3"></div>
+                        <a href="tel:+91 123" class="text-2xl font-bold text-amber-400 hover:text-amber-300 transition duration-300 inline-block p-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700">+91 123</a>
+                        <a href="tel:+91 123" class="text-2xl font-bold text-amber-400 hover:text-amber-300 transition duration-300 inline-block p-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700">+91 123</a>
                     </div>
 
                     <!-- NEW SOCIAL SECTION -->
                     <div class="pt-4 border-t border-gray-700 flex flex-col items-center">
                         <span class="text-xl font-semibold text-gray-200 mb-4">Connect With Us</span>
                         <div class="flex justify-center space-x-8">
-                            
                             <!-- Instagram -->
                             <a href="https://www.instagram.com/artisanscanvas4/" aria-label="Instagram" class="flex flex-col items-center group">
-                                <!-- TODO: Replace 'src' with your local icon path (e.g., 'icons/instagram.png') -->
-                                <img src="insta.png " 
-                                     alt="Instagram" 
-                                     class="w-12 h-12 object-contain hover:scale-110 transition duration-300">
+                                <img src="insta.png" alt="Instagram" class="w-12 h-12 object-contain hover:scale-110 transition duration-300">
                                 <span class="mt-2 text-sm text-gray-400 group-hover:text-[#E1306C]">Instagram</span>
                             </a>
-
                             <!-- LinkedIn -->
                             <a href="https" aria-label="LinkedIn" class="flex flex-col items-center group">
-                                <!-- TODO: Replace 'src' with your local icon path (e.g., 'icons/linkedin.png') -->
-                                <img src="link.png" 
-                                     alt="LinkedIn" 
-                                     class="w-12 h-12 object-contain hover:scale-110 transition duration-300">
+                                <img src="link.png" alt="LinkedIn" class="w-12 h-12 object-contain hover:scale-110 transition duration-300">
                                 <span class="mt-2 text-sm text-gray-400 group-hover:text-[#0A66C2]">LinkedIn</span>
                             </a>
-
                             <!-- Email -->
                              <a href="mailto:artisancanvas26@gmail.com" aria-label="Email" class="flex flex-col items-center group">
-                                <!-- TODO: Replace 'src' with your local icon path (e.g., 'icons/email.png') -->
-                                <img src="gmail.png" 
-                                     alt="Email" 
-                                     class="w-12 h-12 object-contain hover:scale-110 transition duration-300">
+                                <img src="gmail.png" alt="Email" class="w-12 h-12 object-contain hover:scale-110 transition duration-300">
                                 <span class="mt-2 text-sm text-gray-400 group-hover:text-amber-400">Email</span>
                             </a>
-
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
-        
     </main>
 
     <!-- Fullscreen Image Modal -->
@@ -1740,591 +1518,597 @@ document.addEventListener('DOMContentLoaded', () => {
         <img id="modal-image" src="" alt="Full View" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl border border-gray-700">
     </div>
 
-
-
     <!-- ========================================== -->
-<!-- PAYMENT MODAL: QR, CAMERA & DOWNLOAD ONLY -->
-<!-- ========================================== -->
+    <!-- PAYMENT MODAL: QR, CAMERA & DOWNLOAD ONLY -->
+    <!-- ========================================== -->
+    
+    <!-- Load QR Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
-<!-- Load QR Scanner Library -->
-<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-
-<div id="payment-modal" class="fixed inset-0 z-[80] hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300" aria-hidden="true">
-    <div class="bg-[#1F2937] p-6 rounded-2xl shadow-2xl border border-amber-500/30 max-w-sm w-full relative modal-enter flex flex-col items-center max-h-[90vh] overflow-y-auto">
-        
-        <!-- Close Button -->
-        <button id="close-payment-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors" aria-label="Close payment dialog">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-        </button>
-
-        <h3 class="text-2xl font-bold text-white mb-1 mt-2">Pay via UPI</h3>
-        <p class="text-gray-400 text-xs mb-4">Paying: <span id="payee-name-display" class="text-amber-400">...</span></p>
-        
-        <!-- SECTION 1: Static QR View -->
-        <div id="static-qr-view" class="w-full flex flex-col items-center">
+    <div id="payment-modal" class="fixed inset-0 z-[80] hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300" aria-hidden="true">
+        <div class="bg-[#1F2937] p-6 rounded-2xl shadow-2xl border border-amber-500/30 max-w-sm w-full relative modal-enter flex flex-col items-center max-h-[90vh] overflow-y-auto">
             
-            <!-- QR CODE IMAGE CONTAINER -->
-            <div class="relative group mb-8">
-                <div class="bg-white p-2 rounded-lg w-56 h-56 flex items-center justify-center shadow-lg ring-4 ring-white/10">
-                    <!-- ⬇️ REPLACE THIS IMAGE SOURCE ⬇️ -->
-                    <img id="display-qr-code" src="qrcode1.png" alt="Payment QR Code" class="w-full h-full object-contain">
+            <button id="close-payment-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors" aria-label="Close payment dialog">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+
+            <h3 class="text-2xl font-bold text-white mb-1 mt-2">Pay via UPI</h3>
+            <p class="text-gray-400 text-xs mb-4">Paying: <span id="payee-name-display" class="text-amber-400">...</span></p>
+            
+            <div id="static-qr-view" class="w-full flex flex-col items-center">
+                <div class="relative group mb-8">
+                    <div class="bg-white p-2 rounded-lg w-56 h-56 flex items-center justify-center shadow-lg ring-4 ring-white/10">
+                        <img id="display-qr-code" src="qrcode1.png" alt="Payment QR Code" class="w-full h-full object-contain">
+                    </div>
+                    <button id="btn-download-qr" class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-amber-500 hover:text-white flex items-center gap-1 transition-colors whitespace-nowrap py-1 px-2 rounded hover:bg-white/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Save QR Image
+                    </button>
                 </div>
                 
-                <!-- DOWNLOAD BUTTON (Appears below image) -->
-                <button id="btn-download-qr" class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-amber-500 hover:text-white flex items-center gap-1 transition-colors whitespace-nowrap py-1 px-2 rounded hover:bg-white/10">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Save QR Image
-                </button>
-            </div>
-            
-            <p class="text-gray-400 text-sm text-center mb-1">
-                Scan this QR code to pay.
-            </p>
-            <p class="text-[11px] text-gray-500 text-center mb-6 italic">
-                Desktop users: Use your phone camera to scan
-            </p>
+                <p class="text-gray-400 text-sm text-center mb-1">Scan this QR code to pay.</p>
+                <p class="text-[11px] text-gray-500 text-center mb-6 italic">Desktop users: Use your phone camera to scan</p>
 
-            <!-- ACTION BUTTONS -->
-            <div class="w-full space-y-3">
-                <!-- CAMERA SCANNER BUTTON -->
-                <button id="btn-activate-scanner" class="w-full bg-[#374151] hover:bg-[#4B5563] text-white border border-gray-600 font-medium py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera text-amber-500 group-hover:scale-110 transition-transform"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                    Open Camera Scanner
-                </button>
-            </div>
-        </div>
-
-        <!-- SECTION 2: Camera Scanner (Hidden by default) -->
-        <div id="camera-scanner-view" class="hidden w-full flex-col items-center relative min-h-[350px]">
-            <!-- Camera Viewfinder -->
-            <div id="reader" class="w-full overflow-hidden rounded-lg border-2 border-amber-500/50 mb-4 bg-black relative" style="min-height: 300px;">
-                <div id="scan-line" class="absolute top-0 left-0 w-full h-1 bg-amber-500 shadow-[0_0_10px_#f59e0b] z-10 hidden animate-scan"></div>
-            </div>
-
-            <!-- ERROR OVERLAY -->
-            <div id="camera-error-overlay" class="hidden absolute top-0 left-0 w-full h-[300px] bg-gray-900/95 z-20 flex flex-col items-center justify-center p-6 text-center rounded-lg border border-red-500/30">
-                <div class="bg-red-500/20 p-3 rounded-full mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera-off"><line x1="2" x2="22" y1="2" y2="22"/><path d="M7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16"/><path d="M9.5 4h5L17 7h3a2 2 0 0 1 2 2v7.5"/><path d="M14.121 15.121A3 3 0 1 1 9.88 10.88"/></svg>
+                <div class="w-full space-y-3">
+                    <button id="btn-activate-scanner" class="w-full bg-[#374151] hover:bg-[#4B5563] text-white border border-gray-600 font-medium py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2 group">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera text-amber-500 group-hover:scale-110 transition-transform"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                        Open Camera Scanner
+                    </button>
                 </div>
-                <h4 class="text-white font-bold mb-1">Camera Access Denied</h4>
-                <p class="text-gray-400 text-xs mb-4">
-                    Your browser blocked camera access. Please check your address bar or settings to allow permissions.
-                </p>
-                <button id="btn-retry-permission" class="bg-amber-500 text-black font-bold py-2 px-6 rounded-lg hover:bg-amber-400 transition-colors text-sm">
-                    Try Again
-                </button>
-            </div>
-            
-            <!-- Status Text -->
-            <div id="scanner-status" class="text-center mb-4 min-h-[1.5rem] w-full flex flex-col items-center gap-2">
-                <p class="text-amber-400 text-xs animate-pulse">Initializing camera...</p>
             </div>
 
-            <button id="btn-cancel-scan" class="text-gray-400 hover:text-white underline text-sm">
-                Cancel & Go Back
-            </button>
+            <div id="camera-scanner-view" class="hidden w-full flex-col items-center relative min-h-[350px]">
+                <div id="reader" class="w-full overflow-hidden rounded-lg border-2 border-amber-500/50 mb-4 bg-black relative" style="min-height: 300px;">
+                    <div id="scan-line" class="absolute top-0 left-0 w-full h-1 bg-amber-500 shadow-[0_0_10px_#f59e0b] z-10 hidden animate-scan"></div>
+                </div>
+
+                <div id="camera-error-overlay" class="hidden absolute top-0 left-0 w-full h-[300px] bg-gray-900/95 z-20 flex flex-col items-center justify-center p-6 text-center rounded-lg border border-red-500/30">
+                    <div class="bg-red-500/20 p-3 rounded-full mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera-off"><line x1="2" x2="22" y1="2" y2="22"/><path d="M7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16"/><path d="M9.5 4h5L17 7h3a2 2 0 0 1 2 2v7.5"/><path d="M14.121 15.121A3 3 0 1 1 9.88 10.88"/></svg>
+                    </div>
+                    <h4 class="text-white font-bold mb-1">Camera Access Denied</h4>
+                    <p class="text-gray-400 text-xs mb-4">Your browser blocked camera access. Please check your address bar or settings to allow permissions.</p>
+                    <button id="btn-retry-permission" class="bg-amber-500 text-black font-bold py-2 px-6 rounded-lg hover:bg-amber-400 transition-colors text-sm">Try Again</button>
+                </div>
+                
+                <div id="scanner-status" class="text-center mb-4 min-h-[1.5rem] w-full flex flex-col items-center gap-2">
+                    <p class="text-amber-400 text-xs animate-pulse">Initializing camera...</p>
+                </div>
+
+                <button id="btn-cancel-scan" class="text-gray-400 hover:text-white underline text-sm">Cancel & Go Back</button>
+            </div>
+            
+            <div id="temp-qr-reader" style="display: none;"></div>
         </div>
-        
-        <!-- Hidden div for file scanning (Not used anymore) -->
-        <div id="temp-qr-reader" style="display: none;"></div>
     </div>
-</div>
 
-<style>
-    @keyframes scan {
-        0% { top: 0%; opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 1; }
-        100% { top: 100%; opacity: 0; }
-    }
-    .animate-scan {
-        animation: scan 2s linear infinite;
-    }
-</style>
-
-<script>
-    // ==========================================
-    // ⬇️ CONFIGURATION ⬇️
-    // ==========================================
-    const UPI_CONFIG = {
-        name: 'Artisans Canvas'  // 1. Display Name
-    };
-    // ==========================================
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- 1. SETUP DATA ---
-        const nameDisplay = document.getElementById('payee-name-display');
-        const safeName = UPI_CONFIG.name.trim();
-        if(nameDisplay) nameDisplay.textContent = safeName;
-
-        // --- 2. ELEMENTS ---
-        const modal = document.getElementById('payment-modal');
-        const closeBtn = document.getElementById('close-payment-modal');
-        const staticView = document.getElementById('static-qr-view');
-        const cameraView = document.getElementById('camera-scanner-view');
-        
-        // Buttons
-        const activateScanBtn = document.getElementById('btn-activate-scanner');
-        const cancelScanBtn = document.getElementById('btn-cancel-scan');
-        const retryBtn = document.getElementById('btn-retry-permission');
-        
-        const downloadBtn = document.getElementById('btn-download-qr');
-        const qrImage = document.getElementById('display-qr-code');
-
-        // Status & Overlay
-        const errorOverlay = document.getElementById('camera-error-overlay');
-        const statusTextContainer = document.getElementById('scanner-status');
-        const scanLine = document.getElementById('scan-line');
-        
-        let html5QrcodeScanner = null;
-        let isScanning = false;
-
-        // --- 3. MODAL CONTROLS ---
-        window.openPaymentModal = function() {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            resetView();
+    <style>
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
         }
+        .animate-scan {
+            animation: scan 2s linear infinite;
+        }
+    </style>
 
-        closeBtn.addEventListener('click', () => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            stopScanner();
-        });
+    <script>
+        const UPI_CONFIG = { name: 'Artisans Canvas' };
 
-        // --- 4. DOWNLOAD FEATURE ---
-        downloadBtn.addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.href = qrImage.src;
-            link.download = 'payment-qr-code.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const nameDisplay = document.getElementById('payee-name-display');
+            const safeName = UPI_CONFIG.name.trim();
+            if(nameDisplay) nameDisplay.textContent = safeName;
 
-        // --- 5. CAMERA SCANNER LOGIC ---
-        activateScanBtn.addEventListener('click', () => {
-            staticView.classList.add('hidden');
-            cameraView.classList.remove('hidden');
-            cameraView.classList.add('flex');
+            const modal = document.getElementById('payment-modal');
+            const closeBtn = document.getElementById('close-payment-modal');
+            const staticView = document.getElementById('static-qr-view');
+            const cameraView = document.getElementById('camera-scanner-view');
             
-            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
-                showError("Camera requires a Secure Connection (HTTPS).");
-                return;
-            }
-            startScanner();
-        });
+            const activateScanBtn = document.getElementById('btn-activate-scanner');
+            const cancelScanBtn = document.getElementById('btn-cancel-scan');
+            const retryBtn = document.getElementById('btn-retry-permission');
+            
+            const downloadBtn = document.getElementById('btn-download-qr');
+            const qrImage = document.getElementById('display-qr-code');
 
-        cancelScanBtn.addEventListener('click', () => {
-            stopScanner();
-            resetView();
-        });
+            const errorOverlay = document.getElementById('camera-error-overlay');
+            const statusTextContainer = document.getElementById('scanner-status');
+            const scanLine = document.getElementById('scan-line');
+            
+            let html5QrcodeScanner = null;
+            let isScanning = false;
 
-        retryBtn.addEventListener('click', () => {
-            errorOverlay.classList.add('hidden');
-            updateStatus("Retrying... Please allow access.", "text-amber-400", true);
-            startScanner();
-        });
-
-        function resetView() {
-            cameraView.classList.add('hidden');
-            cameraView.classList.remove('flex');
-            staticView.classList.remove('hidden');
-            errorOverlay.classList.add('hidden');
-            updateStatus("Initializing camera...", "text-amber-400", true);
-            // Removed uploadStatus clearing as upload feature is removed
-        }
-
-        function updateStatus(text, colorClass, pulse = false) {
-            statusTextContainer.innerHTML = `<p class="${colorClass} text-xs ${pulse ? 'animate-pulse' : ''}">${text}</p>`;
-        }
-
-        function showError(msg) {
-            errorOverlay.classList.remove('hidden');
-            if(msg) console.log(msg);
-            updateStatus("Permission Error", "text-red-500");
-        }
-
-        function startScanner() {
-            if (typeof Html5Qrcode === 'undefined') {
-                updateStatus("Error: Scanner library not loaded.", "text-red-500");
-                return;
-            }
-
-            html5QrcodeScanner = new Html5Qrcode("reader");
-
-            const config = { 
-                fps: 10, 
-                qrbox: (w, h) => ({ width: Math.floor(Math.min(w, h) * 0.7), height: Math.floor(Math.min(w, h) * 0.7) }),
-                aspectRatio: 1.0 
-            };
-
-            const constraints = { facingMode: "environment" };
-
-            updateStatus("Please tap 'Allow' in the camera popup...", "text-amber-400", true);
-
-            html5QrcodeScanner.start(constraints, config, onScanSuccess, onScanFailure)
-                .then(() => {
-                    isScanning = true;
-                    scanLine.classList.remove('hidden');
-                    errorOverlay.classList.add('hidden');
-                    updateStatus("Point camera at QR Code", "text-white");
-                }).catch(err => {
-                    console.error("Camera start error:", err);
-                    isScanning = false;
-                    showError();
-                });
-        }
-
-        function stopScanner() {
-            if (html5QrcodeScanner && isScanning) {
-                html5QrcodeScanner.stop().then(() => {
-                    html5QrcodeScanner.clear();
-                    isScanning = false;
-                    scanLine.classList.add('hidden');
-                }).catch(console.error);
-            }
-        }
-
-        function onScanSuccess(decodedText) {
-            // 🛑 SMART SANITIZER 🛑
-            // Fixes "Limit Exceeded" error by cleaning the link before redirecting.
-            // Removes 'tr', 'tn', 'mc', forces P2P mode.
-            let safeLink = decodedText;
-
-            try {
-                if (decodedText.toLowerCase().startsWith('upi://')) {
-                    const urlObj = new URL(decodedText);
-                    const params = new URLSearchParams(urlObj.search);
-
-                    const cleanParams = new URLSearchParams();
-                    if(params.has('pa')) cleanParams.append('pa', params.get('pa'));
-                    if(params.has('pn')) cleanParams.append('pn', params.get('pn'));
-                    if(params.has('am')) cleanParams.append('am', params.get('am'));
-
-                    cleanParams.append('cu', 'INR');
-                    cleanParams.append('mode', '00'); // Force P2P mode
-
-                    safeLink = `upi://pay?${cleanParams.toString()}`;
-
-                    console.log("Sanitized Link:", safeLink);
-                }
-            } catch(e) {
-                console.log("Link parsing failed, using original.");
-            }
-
-            if (isScanning) {
-                updateStatus("✅ Scanned! Opening...", "text-green-400 font-bold");
+            closeBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
                 stopScanner();
+            });
+
+            downloadBtn.addEventListener('click', () => {
+                const link = document.createElement('a');
+                link.href = qrImage.src;
+                link.download = 'payment-qr-code.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+
+            activateScanBtn.addEventListener('click', () => {
+                staticView.classList.add('hidden');
+                cameraView.classList.remove('hidden');
+                cameraView.classList.add('flex');
+                
+                if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                    showError("Camera requires a Secure Connection (HTTPS).");
+                    return;
+                }
+                startScanner();
+            });
+
+            cancelScanBtn.addEventListener('click', () => {
+                stopScanner();
+                resetView();
+            });
+
+            retryBtn.addEventListener('click', () => {
+                errorOverlay.classList.add('hidden');
+                updateStatus("Retrying... Please allow access.", "text-amber-400", true);
+                startScanner();
+            });
+
+            function resetView() {
+                cameraView.classList.add('hidden');
+                cameraView.classList.remove('flex');
+                staticView.classList.remove('hidden');
+                errorOverlay.classList.add('hidden');
+                updateStatus("Initializing camera...", "text-amber-400", true);
             }
 
-            setTimeout(() => {
-                window.location.href = safeLink;
-            }, 500);
-
-            // Show fallback button
-            const btnHtml = `
-                <div class="mt-4 animate-bounce text-center w-full flex justify-center">
-                    <a href="${safeLink}" class="bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 px-6 rounded-full shadow-lg text-sm flex items-center gap-2">
-                        <span>Tap to Open Link</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                    </a>
-                </div>
-            `;
-            
-            if (isScanning) {
-                statusTextContainer.insertAdjacentHTML('beforeend', btnHtml);
-            } else {
-                const staticContainer = document.getElementById('static-qr-view');
-                const existingBtn = staticContainer.querySelector('.animate-bounce');
-                if(existingBtn) existingBtn.remove();
-                staticContainer.insertAdjacentHTML('beforeend', btnHtml);
+            function updateStatus(text, colorClass, pulse = false) {
+                statusTextContainer.innerHTML = `<p class="${colorClass} text-xs ${pulse ? 'animate-pulse' : ''}">${text}</p>`;
             }
-        }
 
-        function onScanFailure(error) {
-            // Do nothing, keep scanning silently
-        }
-    });
+            function showError(msg) {
+                errorOverlay.classList.remove('hidden');
+                if(msg) console.log(msg);
+                updateStatus("Permission Error", "text-red-500");
+            }
 
+            function startScanner() {
+                if (typeof Html5Qrcode === 'undefined') {
+                    updateStatus("Error: Scanner library not loaded.", "text-red-500");
+                    return;
+                }
 
+                html5QrcodeScanner = new Html5Qrcode("reader");
 
+                const config = { 
+                    fps: 10, 
+                    qrbox: (w, h) => ({ width: Math.floor(Math.min(w, h) * 0.7), height: Math.floor(Math.min(w, h) * 0.7) }),
+                    aspectRatio: 1.0 
+                };
 
-</script>
+                const constraints = { facingMode: "environment" };
 
+                updateStatus("Please tap 'Allow' in the camera popup...", "text-amber-400", true);
 
+                html5QrcodeScanner.start(constraints, config, onScanSuccess, onScanFailure)
+                    .then(() => {
+                        isScanning = true;
+                        scanLine.classList.remove('hidden');
+                        errorOverlay.classList.add('hidden');
+                        updateStatus("Point camera at QR Code", "text-white");
+                    }).catch(err => {
+                        console.error("Camera start error:", err);
+                        isScanning = false;
+                        showError();
+                    });
+            }
 
-    
+            function stopScanner() {
+                if (html5QrcodeScanner && isScanning) {
+                    html5QrcodeScanner.stop().then(() => {
+                        html5QrcodeScanner.clear();
+                        isScanning = false;
+                        scanLine.classList.add('hidden');
+                    }).catch(console.error);
+                }
+            }
+
+            function onScanSuccess(decodedText) {
+                let safeLink = decodedText;
+                try {
+                    if (decodedText.toLowerCase().startsWith('upi://')) {
+                        const urlObj = new URL(decodedText);
+                        const params = new URLSearchParams(urlObj.search);
+                        const cleanParams = new URLSearchParams();
+                        if(params.has('pa')) cleanParams.append('pa', params.get('pa'));
+                        if(params.has('pn')) cleanParams.append('pn', params.get('pn'));
+                        if(params.has('am')) cleanParams.append('am', params.get('am'));
+                        cleanParams.append('cu', 'INR');
+                        cleanParams.append('mode', '00');
+                        safeLink = `upi://pay?${cleanParams.toString()}`;
+                    }
+                } catch(e) {
+                    console.log("Link parsing failed, using original.");
+                }
+
+                if (isScanning) {
+                    updateStatus("✅ Scanned! Opening...", "text-green-400 font-bold");
+                    stopScanner();
+                }
+
+                setTimeout(() => {
+                    window.location.href = safeLink;
+                }, 500);
+
+                const btnHtml = `
+                    <div class="mt-4 animate-bounce text-center w-full flex justify-center">
+                        <a href="${safeLink}" class="bg-amber-500 hover:bg-amber-600 text-black font-bold py-2 px-6 rounded-full shadow-lg text-sm flex items-center gap-2">
+                            <span>Tap to Open Link</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        </a>
+                    </div>
+                `;
+                
+                if (isScanning) {
+                    statusTextContainer.insertAdjacentHTML('beforeend', btnHtml);
+                } else {
+                    const staticContainer = document.getElementById('static-qr-view');
+                    const existingBtn = staticContainer.querySelector('.animate-bounce');
+                    if(existingBtn) existingBtn.remove();
+                    staticContainer.insertAdjacentHTML('beforeend', btnHtml);
+                }
+            }
+
+            function onScanFailure(error) {
+                // Do nothing
+            }
+        });
+    </script>
 
     <!--FIREBASE AUTHENTICATION CODE  -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, signInAnonymously, updateProfile, signInWithCustomToken } 
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc } 
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // Use dynamic config if available, fallback to hardcoded (safety)
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+             apiKey: "AIzaSyCX9UhQBUEpphnQipRjSnOP77iXXGVkkNA",
+              authDomain: "artisans-canvas-65ced.firebaseapp.com",
+              projectId: "artisans-canvas-65ced",
+              storageBucket: "artisans-canvas-65ced.firebasestorage.app",
+              messagingSenderId: "929975655858",
+              appId: "1:929975655858:web:2a5a35852f99a3bcae58ab",
+              measurementId: "G-JZQ74WYXEY"
+        };
 
-<script type="module">
-    // 1. IMPORTS
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc } 
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+        
+        // Define App ID globally for paths
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-    // 2. CONFIGURATION
-    const firebaseConfig = {
-         apiKey: "AIzaSyCX9UhQBUEpphnQipRjSnOP77iXXGVkkNA",
-          authDomain: "artisans-canvas-65ced.firebaseapp.com",
-          projectId: "artisans-canvas-65ced",
-          storageBucket: "artisans-canvas-65ced.firebasestorage.app",
-          messagingSenderId: "929975655858",
-          appId: "1:929975655858:web:2a5a35852f99a3bcae58ab",
-          measurementId: "G-JZQ74WYXEY"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
-
-    // 3. STATE VARIABLES (This fixes the issue)
-    let currentUser = null;
-    let currentReviewsSnapshot = null; // We store the data here so we can re-draw it anytime
-
-    // =========================================================
-    // 4. THE RENDERING ENGINE (New & Improved)
-    // =========================================================
-    const renderReviews = () => {
-        const reviewsGrid = document.getElementById('reviews-grid');
-        if (!reviewsGrid || !currentReviewsSnapshot) return;
-
-        if (currentReviewsSnapshot.empty) {
-            reviewsGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">No reviews yet.</p>`;
-            return;
-        }
-
-        reviewsGrid.innerHTML = ""; // Clear current list
-
-        currentReviewsSnapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            const stars = '★'.repeat(data.rating || 5);
-            
-            // CHECK OWNERSHIP: Does the logged-in user own this review?
-            let deleteBtn = "";
-            if (currentUser && data.uid && currentUser.uid === data.uid) {
-                // We add the button if IDs match
-                deleteBtn = `
-                <button onclick="window.deleteReview('${docSnap.id}')" 
-                    class="absolute top-3 right-3 p-2 bg-black/20 hover:bg-red-500/80 rounded-full text-gray-400 hover:text-white transition z-10" title="Delete Review">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                </button>`;
-            }
-
-            reviewsGrid.innerHTML += `
-                <div class="bg-[#111827] p-4 rounded-lg border border-gray-700 relative group">
-                    ${deleteBtn}
-                    <div class="flex items-center mb-2">
-                        <img src="${data.photo || 'https://via.placeholder.com/40'}" class="w-8 h-8 rounded-full mr-2 border border-gray-600">
-                        <div>
-                            <h4 class="text-white text-sm font-bold">${data.name || 'Anonymous'}</h4>
-                            <div class="text-amber-400 text-xs tracking-widest">${stars}</div>
-                        </div>
-                    </div>
-                    <p class="text-gray-300 text-sm italic">"${data.text}"</p>
-                </div>`;
-        });
-    };
-
-    // =========================================================
-    // 5. GLOBAL DELETE FUNCTION
-    // =========================================================
-    window.deleteReview = async (reviewId) => {
-        if(confirm("Are you sure you want to delete this review?")) {
+        // AUTH INIT: Ensure anonymous login immediately for read access
+        const initAuth = async () => {
             try {
-                await deleteDoc(doc(db, "reviews", reviewId));
-                // No need to alert; the onSnapshot listener will update the screen automatically
-            } catch (error) {
-                console.error("Delete failed", error);
-                alert("Could not delete. Check console.");
-            }
-        }
-    };
-
-    // =========================================================
-    // 6. LISTENERS
-    // =========================================================
-    
-    // A. Listen for Database Changes
-    const reviewsGrid = document.getElementById('reviews-grid');
-    if(reviewsGrid) {
-        const q = query(collection(db, "reviews"), orderBy("timestamp", "desc"));
-        onSnapshot(q, (snapshot) => {
-            currentReviewsSnapshot = snapshot; // Save data
-            renderReviews(); // Draw it!
-        });
-    }
-
-    // B. Listen for Login/Logout Changes
-    onAuthStateChanged(auth, (user) => {
-        currentUser = user; // Update user
-        renderReviews(); // Redraw reviews (This makes the delete button appear!)
-
-        // Navbar & Modal Logic (Your existing UI updates)
-        const modalForm = document.getElementById('modal-review-form');
-        const modalLoginPrompt = document.getElementById('modal-login-prompt');
-        const uiDesktop = document.getElementById('user-info-desktop');
-        const loginDesktop = document.getElementById('login-btn-desktop');
-        const modalLoginBtn = document.getElementById('modal-login-btn'); 
-
-        // Handle Login button inside Modal
-        if(modalLoginBtn) modalLoginBtn.onclick = () => signInWithPopup(auth, provider);
-
-        if(user) {
-            if(modalForm) modalForm.classList.remove('hidden');
-            if(modalLoginPrompt) modalLoginPrompt.classList.add('hidden');
-            if(uiDesktop) {
-                uiDesktop.classList.remove('hidden');
-                uiDesktop.classList.add('flex');
-                document.getElementById('user-name-desktop').innerText = user.displayName.split(' ')[0];
-                document.getElementById('user-photo-desktop').src = user.photoURL;
-            }
-            if(loginDesktop) loginDesktop.classList.add('hidden');
-        } else {
-            if(modalForm) modalForm.classList.add('hidden');
-            if(modalLoginPrompt) modalLoginPrompt.classList.remove('hidden');
-            if(uiDesktop) uiDesktop.classList.add('hidden');
-            if(loginDesktop) loginDesktop.classList.remove('hidden');
-        }
-    });
-
-    // C. Modal Open/Close Logic
-    const reviewsModal = document.getElementById('reviews-modal');
-    const stickyBtn = document.getElementById('sticky-review-btn');
-    const navBtn = document.getElementById('nav-review-btn');
-    const closeBtn = document.getElementById('close-reviews-modal');
-
-    const toggleModal = (show) => {
-        if(show) {
-            reviewsModal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        } else {
-            reviewsModal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-    };
-
-    if(stickyBtn) stickyBtn.addEventListener('click', () => toggleModal(true));
-    if(navBtn) navBtn.addEventListener('click', () => toggleModal(true));
-    if(closeBtn) closeBtn.addEventListener('click', () => toggleModal(false));
-    if(reviewsModal) reviewsModal.addEventListener('click', (e) => {
-        if(e.target === reviewsModal) toggleModal(false);
-    });
-
-    // D. Navbar Login Logic
-    const loginBtnDesktop = document.getElementById('login-btn-desktop');
-    const logoutBtnDesktop = document.getElementById('logout-btn-desktop');
-    if(loginBtnDesktop) loginBtnDesktop.onclick = () => signInWithPopup(auth, provider);
-    if(logoutBtnDesktop) logoutBtnDesktop.onclick = () => signOut(auth).then(() => window.location.reload());
-
-    // E. Submit Review Logic
-    const reviewForm = document.getElementById('review-form');
-    const starBtns = document.querySelectorAll('.star-btn');
-    const ratingInput = document.getElementById('rating-input');
-
-    // Star Click
-    starBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const val = btn.getAttribute('data-value');
-            if(ratingInput) ratingInput.value = val;
-            starBtns.forEach(star => {
-                if(star.getAttribute('data-value') <= val) {
-                    star.classList.remove('text-gray-500');
-                    star.classList.add('text-amber-400');
-                } else {
-                    star.classList.add('text-gray-500');
-                    star.classList.remove('text-amber-400');
+                // Only sign in if no user is present at all
+                if (!auth.currentUser) {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        try {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } catch (tokenError) {
+                            console.warn("Custom token auth failed, trying anonymous:", tokenError);
+                            await signInAnonymously(auth);
+                        }
+                    } else {
+                        try {
+                            await signInAnonymously(auth);
+                        } catch (anonErr) {
+                            console.warn("Anonymous sign-in restricted, likely waiting for user login.", anonErr);
+                        }
+                    }
                 }
+            } catch (e) {
+                console.error("Auth initialization failed", e);
+            }
+        };
+        initAuth();
+
+        // STANDARDIZED LOGIN HANDLER
+        const handleLogin = async () => {
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error("Login failed:", error);
+                
+                if (error.code === 'auth/unauthorized-domain' || error.code === 'auth/operation-not-allowed') {
+                    try {
+                        let user = auth.currentUser;
+                        if (!user) {
+                            const cred = await signInAnonymously(auth);
+                            user = cred.user;
+                        }
+                        
+                        await updateProfile(user, {
+                            displayName: "Guest Reviewer",
+                            photoURL: "https://ui-avatars.com/api/?name=Guest&background=fbbf24&color=111827"
+                        });
+                        
+                        window.location.reload();
+                    } catch (anonErr) {
+                        console.error("Guest fallback failed", anonErr);
+                        alert("Login failed. Please refresh and try again.");
+                    }
+                } else {
+                    alert("Login Error: " + error.message);
+                }
+            }
+        };
+
+        let currentUser = null;
+        let currentReviewsSnapshot = null;
+        let unsubscribeReviews = null;
+
+        const renderReviews = () => {
+            const reviewsGrid = document.getElementById('reviews-grid');
+            if (!reviewsGrid || !currentReviewsSnapshot) return;
+
+            if (currentReviewsSnapshot.empty) {
+                reviewsGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">No reviews yet.</p>`;
+                return;
+            }
+
+            reviewsGrid.innerHTML = "";
+            
+            // Client-side sorting because composite indexes are restricted
+            const reviews = [];
+            currentReviewsSnapshot.forEach(doc => {
+                reviews.push({ id: doc.id, ...doc.data() });
+            });
+            
+            // Sort desc by timestamp
+            reviews.sort((a, b) => {
+                const tA = a.timestamp ? a.timestamp.toMillis() : 0;
+                const tB = b.timestamp ? b.timestamp.toMillis() : 0;
+                return tB - tA;
+            });
+
+            reviews.forEach((data) => {
+                const stars = '★'.repeat(data.rating || 5);
+                
+                let deleteBtn = "";
+                if (currentUser && data.uid && currentUser.uid === data.uid) {
+                    deleteBtn = `
+                    <button onclick="window.deleteReview('${data.id}')" 
+                        class="absolute top-3 right-3 p-2 bg-black/20 hover:bg-red-500/80 rounded-full text-gray-400 hover:text-white transition z-10" title="Delete Review">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                    </button>`;
+                }
+
+                reviewsGrid.innerHTML += `
+                    <div class="bg-[#111827] p-4 rounded-lg border border-gray-700 relative group">
+                        ${deleteBtn}
+                        <div class="flex items-center mb-2">
+                            <img src="${data.photo || 'https://via.placeholder.com/40'}" class="w-8 h-8 rounded-full mr-2 border border-gray-600">
+                            <div>
+                                <h4 class="text-white text-sm font-bold">${data.name || 'Anonymous'}</h4>
+                                <div class="text-amber-400 text-xs tracking-widest">${stars}</div>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 text-sm italic">"${data.text}"</p>
+                    </div>`;
+            });
+        };
+
+        window.deleteReview = async (reviewId) => {
+            if(confirm("Are you sure you want to delete this review?")) {
+                try {
+                    // Correct path for private user data OR public shared data. Reviews are usually public.
+                    // Using public data path as per requirement.
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reviews', reviewId));
+                } catch (error) {
+                    console.error("Delete failed", error);
+                    alert("Could not delete. Check console.");
+                }
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user; 
+            
+            // Clean up previous listener
+            if (unsubscribeReviews) {
+                unsubscribeReviews();
+                unsubscribeReviews = null;
+            }
+
+            // Only fetch data if user is authenticated (anonymous or logged in)
+            if (user) {
+                const reviewsGrid = document.getElementById('reviews-grid');
+                if(reviewsGrid) {
+                    // CORRECT PATH: /artifacts/{appId}/public/data/reviews
+                    // REMOVED orderBy() to prevent index errors
+                    const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'reviews'));
+                    
+                    unsubscribeReviews = onSnapshot(q, (snapshot) => {
+                        currentReviewsSnapshot = snapshot; 
+                        renderReviews(); 
+                    }, (error) => {
+                        console.error("Snapshot error:", error);
+                    });
+                }
+            } else {
+                currentReviewsSnapshot = null;
+                renderReviews();
+            }
+
+            const modalForm = document.getElementById('modal-review-form');
+            const modalLoginPrompt = document.getElementById('modal-login-prompt');
+            
+            const uiDesktop = document.getElementById('user-info-desktop');
+            const loginDesktop = document.getElementById('login-btn-desktop');
+            const loginMobile = document.getElementById('login-btn-mobile');
+            const uiMobile = document.getElementById('user-info-mobile');
+            const mobileName = document.getElementById('user-name-mobile');
+            const mobileEmail = document.getElementById('user-email-mobile');
+            const mobilePhoto = document.getElementById('user-photo-mobile');
+            
+            const isGuestOrLogged = user && (user.displayName || !user.isAnonymous);
+
+            if(isGuestOrLogged) {
+                if(modalForm) modalForm.classList.remove('hidden');
+                if(modalLoginPrompt) modalLoginPrompt.classList.add('hidden');
+                
+                if(uiDesktop) {
+                    uiDesktop.classList.remove('hidden');
+                    uiDesktop.classList.add('flex');
+                    document.getElementById('user-name-desktop').innerText = user.displayName ? user.displayName.split(' ')[0] : 'Guest';
+                    document.getElementById('user-photo-desktop').src = user.photoURL;
+                }
+                if(loginDesktop) loginDesktop.classList.add('hidden');
+
+                if(loginMobile) loginMobile.classList.add('hidden');
+                if(uiMobile) {
+                    uiMobile.classList.remove('hidden');
+                    uiMobile.classList.add('flex');
+                    if(mobileName) mobileName.innerText = user.displayName ? user.displayName.split(' ')[0] : 'Guest';
+                    if(mobileEmail) mobileEmail.innerText = user.email || (user.isAnonymous ? 'guest@artisan.com' : 'user@example.com');
+                    if(mobilePhoto) mobilePhoto.src = user.photoURL;
+                }
+
+            } else {
+                if(modalForm) modalForm.classList.add('hidden');
+                if(modalLoginPrompt) modalLoginPrompt.classList.remove('hidden');
+                
+                if(uiDesktop) uiDesktop.classList.add('hidden');
+                if(loginDesktop) loginDesktop.classList.remove('hidden');
+
+                if(loginMobile) loginMobile.classList.remove('hidden');
+                if(uiMobile) uiMobile.classList.add('hidden');
+            }
+        });
+
+        const reviewsModal = document.getElementById('reviews-modal');
+        const stickyBtn = document.getElementById('sticky-review-btn');
+        const navBtn = document.getElementById('nav-review-btn');
+        const closeBtn = document.getElementById('close-reviews-modal');
+        const navBtnMobile = document.getElementById('nav-review-btn-mobile');
+
+        const toggleModal = (show) => {
+            if(show) {
+                reviewsModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                reviewsModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        };
+
+        if(stickyBtn) stickyBtn.addEventListener('click', () => toggleModal(true));
+        if(navBtn) navBtn.addEventListener('click', () => toggleModal(true));
+        if(navBtnMobile) navBtnMobile.addEventListener('click', () => toggleModal(true));
+        if(closeBtn) closeBtn.addEventListener('click', () => toggleModal(false));
+        if(reviewsModal) reviewsModal.addEventListener('click', (e) => {
+            if(e.target === reviewsModal) toggleModal(false);
+        });
+
+        const loginBtnDesktop = document.getElementById('login-btn-desktop');
+        const logoutBtnDesktop = document.getElementById('logout-btn-desktop');
+        const loginBtnMobile = document.getElementById('login-btn-mobile');
+        const logoutBtnMobile = document.getElementById('logout-btn-mobile');
+        const modalLoginBtn = document.getElementById('modal-login-btn'); 
+        
+        if(loginBtnDesktop) loginBtnDesktop.onclick = handleLogin;
+        if(loginBtnMobile) loginBtnMobile.onclick = handleLogin;
+        if(modalLoginBtn) modalLoginBtn.onclick = handleLogin;
+        
+        if(logoutBtnDesktop) logoutBtnDesktop.onclick = () => signOut(auth).then(() => window.location.reload());
+        if(logoutBtnMobile) logoutBtnMobile.onclick = () => signOut(auth).then(() => window.location.reload());
+
+        const reviewForm = document.getElementById('review-form');
+        const starBtns = document.querySelectorAll('.star-btn');
+        const ratingInput = document.getElementById('rating-input');
+
+        starBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = btn.getAttribute('data-value');
+                if(ratingInput) ratingInput.value = val;
+                starBtns.forEach(star => {
+                    if(star.getAttribute('data-value') <= val) {
+                        star.classList.remove('text-gray-500');
+                        star.classList.add('text-amber-400');
+                    } else {
+                        star.classList.add('text-gray-500');
+                        star.classList.remove('text-amber-400');
+                    }
+                });
             });
         });
-    });
 
-    if(reviewForm) {
-        reviewForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = document.getElementById('review-text').value;
-            const rating = ratingInput ? ratingInput.value : 0;
+        if(reviewForm) {
+            reviewForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const text = document.getElementById('review-text').value;
+                const rating = ratingInput ? ratingInput.value : 0;
 
-            if(!currentUser) return alert("Please login first.");
-            if(!text || rating == 0) return alert("Please add text and a rating.");
+                if(!currentUser) return alert("Please login first.");
+                if(!text || rating == 0) return alert("Please add text and a rating.");
 
-            try {
-                await addDoc(collection(db, "reviews"), {
-                    uid: currentUser.uid,
-                    name: currentUser.displayName,
-                    photo: currentUser.photoURL,
-                    text: text,
-                    rating: parseInt(rating),
-                    timestamp: serverTimestamp()
-                });
-                reviewForm.reset();
-                if(ratingInput) ratingInput.value = 0;
-                starBtns.forEach(s => s.classList.add('text-gray-500').classList.remove('text-amber-400'));
-            } catch (err) {
-                console.error(err);
-                alert("Error posting review.");
-            }
-        });
-    }
-</script>
-
-
+                try {
+                    // CORRECT PATH: /artifacts/{appId}/public/data/reviews
+                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'reviews'), {
+                        uid: currentUser.uid,
+                        name: currentUser.displayName,
+                        photo: currentUser.photoURL,
+                        text: text,
+                        rating: parseInt(rating),
+                        timestamp: serverTimestamp()
+                    });
+                    reviewForm.reset();
+                    if(ratingInput) ratingInput.value = 0;
+                    starBtns.forEach(s => {
+                        s.classList.add('text-gray-500');
+                        s.classList.remove('text-amber-400');
+                    });
+                } catch (err) {
+                    console.error(err);
+                    alert("Error posting review.");
+                }
+            });
+        }
+    </script>
     
-</body>
-</html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <!--END OF FIREBASE AUTHENTICATION CODE  -->
-    
-    <!---footer--->
-    
-      <footer class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white mt-16 border-t-4 border-amber-500/30 shadow-2xl">
-    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col lg:flex-row justify-between items-center space-y-8 lg:space-y-0">
-            
-            <!-- Left: Branding -->
-            <div class="text-center lg:text-left">
-                <p class="text-2xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
-                    The Artisan's Canvas
-                </p>
-                <p class="text-sm text-gray-400 mb-4">Handmade Artistry, Since Nov 2025</p>
+    <footer class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white mt-16 border-t-4 border-amber-500/30 shadow-2xl">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row justify-between items-center space-y-8 lg:space-y-0">
+                <div class="text-center lg:text-left">
+                    <p class="text-2xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
+                        The Artisan's Canvas
+                    </p>
+                    <p class="text-sm text-gray-400 mb-4">Handmade Artistry, Since Nov 2025</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-base font-semibold text-amber-400 bg-gray-900/80 backdrop-blur-sm p-3 rounded-xl inline-block shadow-xl border border-amber-500/20">
+                        <i data-lucide="map-pin" class="w-5 h-5 inline mr-2"></i>
+                        Panjim - Goa, India
+                    </p>
+                </div>
             </div>
-            
-            <!-- Right: Location Only -->
-            <div class="text-right">
-                <p class="text-base font-semibold text-amber-400 bg-gray-900/80 backdrop-blur-sm p-3 rounded-xl inline-block shadow-xl border border-amber-500/20">
-                    <i data-lucide="map-pin" class="w-5 h-5 inline mr-2"></i>
-                    Panjim - Goa, India
+            <div class="mt-12 pt-8 border-t border-gray-700 text-center">
+                <p class="text-xs text-gray-500 font-medium tracking-wider">
+                    &copy; 2025 The Artisan's Canvas. All rights reserved.
                 </p>
             </div>
         </div>
-        
-        <div class="mt-12 pt-8 border-t border-gray-700 text-center">
-            <p class="text-xs text-gray-500 font-medium tracking-wider">
-                &copy; 2025 The Artisan's Canvas. All rights reserved.
-            </p>
-        </div>
-    </div>
-</footer>
-    
+    </footer>
 </body>
 </html>
