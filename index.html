@@ -268,7 +268,7 @@
 <body class="font-sans antialiased">
 
     <!-- Navigation Bar -->
-    <nav class="sticky top-0 z-50 navbar shadow-art">
+   <nav class="sticky top-0 z-50 navbar shadow-art">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex-shrink-0 flex items-center">
@@ -276,20 +276,29 @@
                         The Artisan's Canvas
                     </a>
                 </div>
-                <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+
+                <div class="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-8">
                     <a href="#featured" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Featured</a>
                     <a href="#gallery" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Available Art</a>
                     <a href="#sold" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Sold Archive</a>
                     <a href="#about" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">About Us</a>
                     <a href="#contact" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Contact</a>
 
-                     <!-- PAYMENT BUTTON (Desktop) -->
-                    <!-- This button has the class 'payment-trigger' which the JS looks for to open the popup -->
                     <button class="payment-trigger inline-flex items-center px-1 pt-1 text-sm font-bold text-green-400 hover:text-green-300 border-b-2 border-transparent hover:border-green-400 transition duration-300">Payment</button>
-                    
 
+                    <div id="auth-desktop" class="ml-4 flex items-center">
+                        <button id="login-btn-desktop" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-1 px-4 rounded-full transition shadow-lg shadow-amber-500/30 text-sm">
+                            Login
+                        </button>
 
-                </div>
+                        <div id="user-info-desktop" class="hidden items-center space-x-3">
+                            <span id="user-name-desktop" class="text-sm font-medium text-amber-400"></span>
+                            <img id="user-photo-desktop" src="" alt="User" class="h-8 w-8 rounded-full border-2 border-amber-500">
+                            <button id="logout-btn-desktop" class="text-xs text-gray-400 hover:text-red-400 underline">Logout</button>
+                        </div>
+                    </div>
+                    </div>
+
                 <div class="flex items-center sm:hidden">
                     <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500" aria-controls="mobile-menu" aria-expanded="false">
                         <span class="sr-only">Open main menu</span>
@@ -299,6 +308,7 @@
                 </div>
             </div>
         </div>
+
         <div class="sm:hidden" id="mobile-menu" style="display: none;">
             <div class="pt-2 pb-3 space-y-1 bg-dark-alt border-t border-gray-700">
                 <a href="#featured" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">Featured</a>
@@ -306,15 +316,31 @@
                 <a href="#sold" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">Sold Archive</a>
                 <a href="#about" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">About Us</a>
                 <a href="#contact" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">Contact</a>
-         
-              <!-- PAYMENT BUTTON (Mobile) -->
-                <!-- Also has 'payment-trigger' class so it opens the same popup -->
+                
                 <button class="payment-trigger w-full text-left block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-bold text-green-400 hover:bg-dark-card hover:text-green-300">Payment</button>
-          
-            </div>
+
+                <div class="border-t border-gray-700 pt-4 pb-3">
+                    <button id="login-btn-mobile" class="block w-full text-left pl-3 pr-4 py-2 text-base font-bold text-amber-500 hover:bg-dark-card">
+                        Login with Google
+                    </button>
+
+                    <div id="user-info-mobile" class="hidden px-4 flex items-center">
+                        <div class="flex-shrink-0">
+                            <img id="user-photo-mobile" class="h-10 w-10 rounded-full border-2 border-amber-500" src="" alt="">
+                        </div>
+                        <div class="ml-3">
+                            <div id="user-name-mobile" class="text-base font-medium text-white">User Name</div>
+                            <div id="user-email-mobile" class="text-sm font-medium text-gray-400">email@example.com</div>
+                            <button id="logout-btn-mobile" class="mt-1 text-sm text-red-400 font-medium">Logout</button>
+                        </div>
+                    </div>
+                </div>
+                </div>
         </div>
     </nav>
 
+
+    <!--Nav bar ended  -->
     <main>
         <!-- Hero Section -->
         <section id="home" class="py-20 md:py-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1877,9 +1903,130 @@
 
 
 
+    
+
+    <!--FIREBASE AUTHENTICATION CODE  -->
+
+
+    <script type="module">
+        // 1. Import Firebase Functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // 2. CONFIGURATION (REPLACE WITH YOUR KEYS)
+        // -------------------------------------------------------------
+        const firebaseConfig = {
+         apiKey: "AIzaSyCX9UhQBUEpphnQipRjSnOP77iXXGVkkNA",
+          authDomain: "artisans-canvas-65ced.firebaseapp.com",
+          projectId: "artisans-canvas-65ced",
+          storageBucket: "artisans-canvas-65ced.firebasestorage.app",
+          messagingSenderId: "929975655858",
+          appId: "1:929975655858:web:2a5a35852f99a3bcae58ab",
+          measurementId: "G-JZQ74WYXEY"
+        };
+        // -------------------------------------------------------------
+
+        // 3. Initialize App
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // 4. Select DOM Elements (Desktop & Mobile)
+        // Desktop Elements
+        const loginBtnDesktop = document.getElementById('login-btn-desktop');
+        const logoutBtnDesktop = document.getElementById('logout-btn-desktop');
+        const userInfoDesktop = document.getElementById('user-info-desktop');
+        const userNameDesktop = document.getElementById('user-name-desktop');
+        const userPhotoDesktop = document.getElementById('user-photo-desktop');
+
+        // Mobile Elements
+        const loginBtnMobile = document.getElementById('login-btn-mobile');
+        const logoutBtnMobile = document.getElementById('logout-btn-mobile');
+        const userInfoMobile = document.getElementById('user-info-mobile');
+        const userNameMobile = document.getElementById('user-name-mobile');
+        const userPhotoMobile = document.getElementById('user-photo-mobile');
+        const userEmailMobile = document.getElementById('user-email-mobile');
+
+        // 5. Function to Handle Login
+        const handleLogin = async () => {
+            try {
+                await signInWithPopup(auth, provider);
+                console.log("Login Successful");
+            } catch (error) {
+                console.error("Login Error:", error);
+                alert("Login Failed: " + error.message);
+            }
+        };
+
+        // 6. Function to Handle Logout
+        const handleLogout = () => {
+            signOut(auth).then(() => {
+                console.log("Logged Out");
+                // Optional: Reload page to clear any cached states
+                // window.location.reload(); 
+            });
+        };
+
+        // 7. Attach Event Listeners
+        if(loginBtnDesktop) loginBtnDesktop.addEventListener('click', handleLogin);
+        if(loginBtnMobile) loginBtnMobile.addEventListener('click', handleLogin);
+        
+        if(logoutBtnDesktop) logoutBtnDesktop.addEventListener('click', handleLogout);
+        if(logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
+
+        // 8. Monitor Authentication State (Runs automatically)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // --- USER IS LOGGED IN ---
+                
+                // Update Desktop UI
+                loginBtnDesktop.classList.add('hidden');
+                userInfoDesktop.classList.remove('hidden');
+                userInfoDesktop.classList.add('flex');
+                userNameDesktop.textContent = user.displayName.split(' ')[0]; // First name only
+                userPhotoDesktop.src = user.photoURL;
+
+                // Update Mobile UI
+                loginBtnMobile.classList.add('hidden');
+                userInfoMobile.classList.remove('hidden');
+                userNameMobile.textContent = user.displayName;
+                userEmailMobile.textContent = user.email;
+                userPhotoMobile.src = user.photoURL;
+
+            } else {
+                // --- USER IS LOGGED OUT ---
+
+                // Reset Desktop UI
+                loginBtnDesktop.classList.remove('hidden');
+                userInfoDesktop.classList.add('hidden');
+                userInfoDesktop.classList.remove('flex');
+
+                // Reset Mobile UI
+                loginBtnMobile.classList.remove('hidden');
+                userInfoMobile.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!--END OF FIREBASE AUTHENTICATION CODE  -->
     
     <!---footer--->
     
