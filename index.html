@@ -15,65 +15,113 @@
         lucide.createIcons();
 
         // Wait for the DOM to be fully loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- Mobile Menu Logic ---
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // ==========================================
+    // 1. MOBILE MENU LOGIC
+    // ==========================================
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
 
-            if (mobileMenuButton && mobileMenu) {
-                mobileMenuButton.addEventListener('click', () => {
-                    const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true' || false;
-                    mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
-                    mobileMenu.style.display = isExpanded ? 'none' : 'block';
-                });
+    if (mobileMenuButton && mobileMenu) {
+        // Toggle Menu Open/Close
+        mobileMenuButton.addEventListener('click', () => {
+            const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true' || false;
+            mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+            mobileMenu.style.display = isExpanded ? 'none' : 'block';
+        });
 
-                const mobileLinks = mobileMenu.querySelectorAll('a');
-                mobileLinks.forEach(link => {
-                    link.addEventListener('click', () => {
-                        mobileMenu.style.display = 'none';
-                        mobileMenuButton.setAttribute('aria-expanded', 'false');
-                    });
-                });
-            }
-
-            // --- Fullscreen Image Modal Logic ---
-            const modal = document.getElementById('image-modal');
-            const modalImg = document.getElementById('modal-image');
-            const closeModal = document.getElementById('close-modal');
-            
-            // Select all images inside product cards, featured projects and the hero image
-            const zoomableImages = document.querySelectorAll('.product-card img, .featured-card img, #home img.object-cover');
-
-            zoomableImages.forEach(img => {
-                // Add click listener to open modal
-                img.addEventListener('click', function(e) {
-                    modalImg.src = this.src; // Set modal image to clicked image source
-                    modal.classList.remove('hidden'); // Show modal
-                    modal.classList.add('flex'); // Ensure flex layout for centering
-                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
-                });
+        // Close Menu when clicking ANY Link OR Button (Updated for Reviews/Payment buttons)
+        const mobileLinks = mobileMenu.querySelectorAll('a, button'); // <--- UPDATED THIS LINE
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.style.display = 'none';
+                mobileMenuButton.setAttribute('aria-expanded', 'false');
             });
+        });
+    }
 
-            // Function to close modal
-            const hideModal = () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                document.body.style.overflow = 'auto'; // Restore scrolling
-            };
+    // ==========================================
+    // 2. FULLSCREEN IMAGE MODAL LOGIC
+    // ==========================================
+    const modal = document.getElementById('image-modal');
+    const modalImg = document.getElementById('modal-image');
+    const closeModal = document.getElementById('close-modal');
+    
+    // Select all images inside product cards, featured projects and the hero image
+    const zoomableImages = document.querySelectorAll('.product-card img, .featured-card img, #home img.object-cover');
 
-            // Close on button click
-            if (closeModal) {
-                closeModal.addEventListener('click', hideModal);
+    zoomableImages.forEach(img => {
+        img.addEventListener('click', function(e) {
+            if(modal && modalImg) {
+                modalImg.src = this.src; 
+                modal.classList.remove('hidden'); 
+                modal.classList.add('flex'); 
+                document.body.style.overflow = 'hidden'; 
             }
+        });
+    });
 
-            // Close on background click
-            if (modal) {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        hideModal();
-                    }
-                });
-            }
+    const hideModal = () => {
+        if(modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto'; 
+        }
+    };
+
+    if (closeModal) closeModal.addEventListener('click', hideModal);
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) hideModal();
+        });
+    }
+
+    // ==========================================
+    // 3. PAYMENT MODAL LOGIC (Restored)
+    // ==========================================
+    const paymentModal = document.getElementById('payment-modal');
+    const closePaymentBtn = document.getElementById('close-payment-modal');
+    const paymentTriggers = document.querySelectorAll('.payment-trigger'); // Selects both Desktop & Mobile buttons
+
+    const showPayment = () => {
+        if(paymentModal) {
+            paymentModal.classList.remove('hidden');
+            paymentModal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+    };
+
+    const hidePayment = () => {
+        if(paymentModal) {
+            paymentModal.classList.add('hidden');
+            paymentModal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+    };
+
+    // Attach to all payment buttons
+    paymentTriggers.forEach(btn => btn.addEventListener('click', showPayment));
+
+    if(closePaymentBtn) closePaymentBtn.addEventListener('click', hidePayment);
+    if(paymentModal) {
+        paymentModal.addEventListener('click', (e) => {
+            if(e.target === paymentModal) hidePayment();
+        });
+    }
+
+    // Global Escape Key to close ANY modal
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            hideModal();   // Image Modal
+            hidePayment(); // Payment Modal
+            // Note: Reviews modal is handled in the module script, but this won't hurt
+        }
+    });
+});
+
+
+            
 
             // ==========================================
             // PAYMENT MODAL LOGIC (EXPLANATION)
@@ -294,24 +342,28 @@
 <body class="font-sans antialiased">
 
     <!-- Navigation Bar -->
-   <nav class="sticky top-0 z-50 navbar shadow-art">
+
+<nav class="sticky top-0 z-50 navbar shadow-art">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
+                
                 <div class="flex-shrink-0 flex items-center">
                     <a href="#home" class="text-2xl font-bold tracking-tight art-primary-text hover:text-amber-400 transition">
                         The Artisan's Canvas
                     </a>
                 </div>
 
-                <div class="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-8">
+                <div class="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-6">
                     <a href="#featured" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Featured</a>
                     <a href="#gallery" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Available Art</a>
                     <a href="#sold" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Sold Archive</a>
                     <a href="#about" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">About Us</a>
                     <a href="#contact" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">Contact</a>
-<button id="nav-review-btn" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">
-    Reviews
-</button>
+                    
+                    <button id="nav-review-btn" class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-300 hover:text-amber-400 border-b-2 border-transparent hover:border-amber-400 transition duration-300">
+                        Reviews
+                    </button>
+
                     <button class="payment-trigger inline-flex items-center px-1 pt-1 text-sm font-bold text-green-400 hover:text-green-300 border-b-2 border-transparent hover:border-green-400 transition duration-300">Payment</button>
 
                     <div id="auth-desktop" class="ml-4 flex items-center">
@@ -319,13 +371,13 @@
                             Login
                         </button>
 
-                        <div id="user-info-desktop" class="hidden items-center space-x-3">
-                            <span id="user-name-desktop" class="text-sm font-medium text-amber-400"></span>
+                        <div id="user-info-desktop" class="hidden items-center space-x-3 bg-gray-800/50 px-3 py-1 rounded-full border border-gray-700 transition">
                             <img id="user-photo-desktop" src="" alt="User" class="h-8 w-8 rounded-full border-2 border-amber-500">
-                            <button id="logout-btn-desktop" class="text-xs text-gray-400 hover:text-red-400 underline">Logout</button>
+                            <span id="user-name-desktop" class="text-sm font-medium text-amber-400 truncate max-w-[100px]"></span>
+                            <button id="logout-btn-desktop" class="text-xs text-red-400 hover:text-red-300 font-bold hover:underline ml-1">Logout</button>
                         </div>
                     </div>
-                    </div>
+                </div>
 
                 <div class="flex items-center sm:hidden">
                     <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500" aria-controls="mobile-menu" aria-expanded="false">
@@ -345,6 +397,10 @@
                 <a href="#about" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">About Us</a>
                 <a href="#contact" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">Contact</a>
                 
+                <button id="nav-review-btn-mobile" class="block w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-300 hover:bg-dark-card hover:text-white">
+                    Reviews
+                </button>
+
                 <button class="payment-trigger w-full text-left block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-bold text-green-400 hover:bg-dark-card hover:text-green-300">Payment</button>
 
                 <div class="border-t border-gray-700 pt-4 pb-3">
@@ -359,13 +415,24 @@
                         <div class="ml-3">
                             <div id="user-name-mobile" class="text-base font-medium text-white">User Name</div>
                             <div id="user-email-mobile" class="text-sm font-medium text-gray-400">email@example.com</div>
-                            <button id="logout-btn-mobile" class="mt-1 text-sm text-red-400 font-medium">Logout</button>
+                            <button id="logout-btn-mobile" class="mt-1 text-sm text-red-400 font-medium hover:text-red-300">Logout</button>
                         </div>
                     </div>
                 </div>
-                </div>
+            </div>
         </div>
     </nav>
+
+
+
+
+
+
+
+
+
+
+    
 
 
     <!--Nav bar ended  -->
