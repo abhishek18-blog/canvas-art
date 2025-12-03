@@ -1501,6 +1501,66 @@
         </section>
         
 
+            <!-- REVIEWS CODE -->
+        <section id="reviews" class="py-16 bg-[#111827] relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-extrabold text-white sm:text-4xl section-title">
+                Collector's Feedback
+            </h2>
+            <p class="mt-4 text-xl text-gray-400">
+                Hear from the community of art lovers.
+            </p>
+        </div>
+
+        <div id="review-form-container" class="hidden max-w-2xl mx-auto bg-[#1F2937] p-6 rounded-xl shadow-lg border border-gray-700 mb-16 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-amber-500"></div>
+            
+            <h3 class="text-xl font-bold text-white mb-2 flex items-center">
+                <i data-lucide="pen-tool" class="w-5 h-5 mr-2 text-amber-500"></i>
+                Write a Review
+            </h3>
+            <p class="text-sm text-gray-400 mb-4">Posting as: <span id="reviewer-name" class="text-amber-400 font-bold">...</span></p>
+
+            <form id="review-form">
+                <div class="flex items-center mb-4 space-x-2">
+                    <span class="text-gray-300 text-sm">Your Rating:</span>
+                    <div class="flex cursor-pointer">
+                        <span class="star-btn text-3xl text-gray-600 hover:text-amber-400 transition" data-value="1">★</span>
+                        <span class="star-btn text-3xl text-gray-600 hover:text-amber-400 transition" data-value="2">★</span>
+                        <span class="star-btn text-3xl text-gray-600 hover:text-amber-400 transition" data-value="3">★</span>
+                        <span class="star-btn text-3xl text-gray-600 hover:text-amber-400 transition" data-value="4">★</span>
+                        <span class="star-btn text-3xl text-gray-600 hover:text-amber-400 transition" data-value="5">★</span>
+                    </div>
+                    <input type="hidden" id="rating-input" value="0">
+                </div>
+
+                <textarea id="review-text" rows="3" class="w-full bg-[#374151] text-white border border-gray-600 rounded-lg p-3 focus:outline-none focus:border-amber-500 placeholder-gray-500" placeholder="How was your experience with the art?"></textarea>
+
+                <div class="mt-4 text-right">
+                    <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-gray-900 font-bold py-2 px-6 rounded-full shadow-lg shadow-amber-500/30 transition transform hover:scale-105">
+                        Post Review
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div id="login-prompt" class="text-center mb-16 bg-[#1F2937] p-8 rounded-xl border border-dashed border-gray-700 max-w-2xl mx-auto">
+            <p class="text-gray-300 mb-4">Own a piece of our art? Log in to share your thoughts.</p>
+            <button id="trigger-login-btn" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-gray-900 bg-amber-500 hover:bg-amber-600 shadow-lg shadow-amber-500/20 transition">
+                Login with Google to Review
+            </button>
+        </div>
+
+        <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="col-span-full text-center text-gray-500 py-10 animate-pulse">
+                Loading community feedback...
+            </div>
+        </div>
+
+    </div>
+</section>
 
 
 
@@ -1908,106 +1968,222 @@
     <!--FIREBASE AUTHENTICATION CODE  -->
 
 
-    <script type="module">
-        // 1. Import Firebase Functions
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
-        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    
+<script type="module">
+    // ==============================================================
+    // 1. IMPORT FIREBASE LIBRARIES
+    // ==============================================================
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } 
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // 2. CONFIGURATION (REPLACE WITH YOUR KEYS)
-        // -------------------------------------------------------------
-        const firebaseConfig = {
-         apiKey: "AIzaSyCX9UhQBUEpphnQipRjSnOP77iXXGVkkNA",
+    // ==============================================================
+    // 2. YOUR CONFIGURATION (Paste your keys here)
+    // ==============================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX9UhQBUEpphnQipRjSnOP77iXXGVkkNA",
           authDomain: "artisans-canvas-65ced.firebaseapp.com",
           projectId: "artisans-canvas-65ced",
           storageBucket: "artisans-canvas-65ced.firebasestorage.app",
           messagingSenderId: "929975655858",
           appId: "1:929975655858:web:2a5a35852f99a3bcae58ab",
           measurementId: "G-JZQ74WYXEY"
-        };
-        // -------------------------------------------------------------
+    };
 
-        // 3. Initialize App
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
 
-        // 4. Select DOM Elements (Desktop & Mobile)
-        // Desktop Elements
-        const loginBtnDesktop = document.getElementById('login-btn-desktop');
-        const logoutBtnDesktop = document.getElementById('logout-btn-desktop');
-        const userInfoDesktop = document.getElementById('user-info-desktop');
-        const userNameDesktop = document.getElementById('user-name-desktop');
-        const userPhotoDesktop = document.getElementById('user-photo-desktop');
+    let currentUser = null;
 
-        // Mobile Elements
-        const loginBtnMobile = document.getElementById('login-btn-mobile');
-        const logoutBtnMobile = document.getElementById('logout-btn-mobile');
-        const userInfoMobile = document.getElementById('user-info-mobile');
-        const userNameMobile = document.getElementById('user-name-mobile');
-        const userPhotoMobile = document.getElementById('user-photo-mobile');
-        const userEmailMobile = document.getElementById('user-email-mobile');
+    // ==============================================================
+    // 3. AUTHENTICATION LOGIC (Navbar & Login)
+    // ==============================================================
+    
+    // Select Elements
+    const loginBtnDesktop = document.getElementById('login-btn-desktop');
+    const loginBtnMobile = document.getElementById('login-btn-mobile');
+    const logoutBtnDesktop = document.getElementById('logout-btn-desktop');
+    const logoutBtnMobile = document.getElementById('logout-btn-mobile');
+    const triggerLoginBtn = document.getElementById('trigger-login-btn'); // Button inside review section
 
-        // 5. Function to Handle Login
-        const handleLogin = async () => {
-            try {
-                await signInWithPopup(auth, provider);
-                console.log("Login Successful");
-            } catch (error) {
-                console.error("Login Error:", error);
-                alert("Login Failed: " + error.message);
-            }
-        };
+    // Login Function
+    const handleLogin = async () => {
+        try { await signInWithPopup(auth, provider); } 
+        catch (error) { console.error("Login failed", error); }
+    };
 
-        // 6. Function to Handle Logout
-        const handleLogout = () => {
-            signOut(auth).then(() => {
-                console.log("Logged Out");
-                // Optional: Reload page to clear any cached states
-                // window.location.reload(); 
+    // Logout Function
+    const handleLogout = () => {
+        signOut(auth).then(() => window.location.reload());
+    };
+
+    // Attach Listeners
+    if(loginBtnDesktop) loginBtnDesktop.addEventListener('click', handleLogin);
+    if(loginBtnMobile) loginBtnMobile.addEventListener('click', handleLogin);
+    if(triggerLoginBtn) triggerLoginBtn.addEventListener('click', handleLogin); // Review section button
+    
+    if(logoutBtnDesktop) logoutBtnDesktop.addEventListener('click', handleLogout);
+    if(logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
+
+
+    // ==============================================================
+    // 4. REVIEW SECTION LOGIC
+    // ==============================================================
+    
+    // Star Rating Interactivity
+    const starBtns = document.querySelectorAll('.star-btn');
+    const ratingInput = document.getElementById('rating-input');
+
+    starBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const val = btn.getAttribute('data-value');
+            ratingInput.value = val;
+            
+            // Highlight stars visually
+            starBtns.forEach(star => {
+                if(star.getAttribute('data-value') <= val) {
+                    star.classList.remove('text-gray-600');
+                    star.classList.add('text-amber-400');
+                } else {
+                    star.classList.add('text-gray-600');
+                    star.classList.remove('text-amber-400');
+                }
             });
-        };
+        });
+    });
 
-        // 7. Attach Event Listeners
-        if(loginBtnDesktop) loginBtnDesktop.addEventListener('click', handleLogin);
-        if(loginBtnMobile) loginBtnMobile.addEventListener('click', handleLogin);
-        
-        if(logoutBtnDesktop) logoutBtnDesktop.addEventListener('click', handleLogout);
-        if(logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
+    // Submit Review to Database
+    const reviewForm = document.getElementById('review-form');
+    if(reviewForm) {
+        reviewForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = document.getElementById('review-text').value;
+            const rating = ratingInput.value;
 
-        // 8. Monitor Authentication State (Runs automatically)
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // --- USER IS LOGGED IN ---
+            if(!currentUser) return alert("Please login first!");
+            if(!text) return alert("Please write a comment.");
+            if(rating == 0) return alert("Please select a star rating.");
+
+            try {
+                await addDoc(collection(db, "reviews"), {
+                    uid: currentUser.uid,
+                    name: currentUser.displayName,
+                    photo: currentUser.photoURL,
+                    text: text,
+                    rating: parseInt(rating),
+                    timestamp: serverTimestamp()
+                });
                 
-                // Update Desktop UI
-                loginBtnDesktop.classList.add('hidden');
-                userInfoDesktop.classList.remove('hidden');
-                userInfoDesktop.classList.add('flex');
-                userNameDesktop.textContent = user.displayName.split(' ')[0]; // First name only
-                userPhotoDesktop.src = user.photoURL;
-
-                // Update Mobile UI
-                loginBtnMobile.classList.add('hidden');
-                userInfoMobile.classList.remove('hidden');
-                userNameMobile.textContent = user.displayName;
-                userEmailMobile.textContent = user.email;
-                userPhotoMobile.src = user.photoURL;
-
-            } else {
-                // --- USER IS LOGGED OUT ---
-
-                // Reset Desktop UI
-                loginBtnDesktop.classList.remove('hidden');
-                userInfoDesktop.classList.add('hidden');
-                userInfoDesktop.classList.remove('flex');
-
-                // Reset Mobile UI
-                loginBtnMobile.classList.remove('hidden');
-                userInfoMobile.classList.add('hidden');
+                // Reset form
+                reviewForm.reset();
+                ratingInput.value = 0;
+                starBtns.forEach(s => s.classList.add('text-gray-600').classList.remove('text-amber-400'));
+                alert("Review Posted!");
+            } catch (err) {
+                console.error("Error posting review:", err);
+                alert("Could not post review. Check console.");
             }
         });
-    </script>
+    }
+
+    // Load Reviews from Database (Real-time)
+    const reviewsGrid = document.getElementById('reviews-grid');
+    if(reviewsGrid) {
+        const q = query(collection(db, "reviews"), orderBy("timestamp", "desc"));
+        
+        onSnapshot(q, (snapshot) => {
+            if(snapshot.empty) {
+                reviewsGrid.innerHTML = `<p class="text-gray-500 text-center col-span-full">No reviews yet. Be the first!</p>`;
+                return;
+            }
+
+            reviewsGrid.innerHTML = ""; // Clear loader
+            
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const stars = '★'.repeat(data.rating) + '☆'.repeat(5 - data.rating);
+                
+                // Create HTML for one card
+                const cardHTML = `
+                    <div class="bg-[#1F2937] p-6 rounded-xl border border-gray-700 hover:border-amber-500/50 transition duration-300 shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <img src="${data.photo}" class="w-12 h-12 rounded-full border-2 border-amber-500 mr-4 shadow-md">
+                            <div>
+                                <h4 class="text-white font-bold">${data.name}</h4>
+                                <div class="text-amber-400 tracking-widest text-sm">${stars}</div>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 italic text-sm leading-relaxed">"${data.text}"</p>
+                    </div>
+                `;
+                reviewsGrid.innerHTML += cardHTML;
+            });
+        });
+    }
+
+    // ==============================================================
+    // 5. GLOBAL STATE MONITOR (Controls UI Visibility)
+    // ==============================================================
+    onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+        
+        // Review UI Elements
+        const formContainer = document.getElementById('review-form-container');
+        const loginPrompt = document.getElementById('login-prompt');
+        const reviewerName = document.getElementById('reviewer-name');
+
+        // Navbar Elements
+        const userInfoDesktop = document.getElementById('user-info-desktop');
+        const userInfoMobile = document.getElementById('user-info-mobile');
+        
+        if (user) {
+            // --- USER IS LOGGED IN ---
+            // 1. Show Review Form
+            if(formContainer) formContainer.classList.remove('hidden');
+            if(loginPrompt) loginPrompt.classList.add('hidden');
+            if(reviewerName) reviewerName.textContent = user.displayName;
+
+            // 2. Update Navbar (Desktop)
+            if(loginBtnDesktop) loginBtnDesktop.classList.add('hidden');
+            if(userInfoDesktop) {
+                userInfoDesktop.classList.remove('hidden');
+                userInfoDesktop.classList.add('flex');
+                document.getElementById('user-name-desktop').textContent = user.displayName.split(' ')[0];
+                document.getElementById('user-photo-desktop').src = user.photoURL;
+            }
+
+            // 3. Update Navbar (Mobile)
+            if(loginBtnMobile) loginBtnMobile.classList.add('hidden');
+            if(userInfoMobile) {
+                userInfoMobile.classList.remove('hidden');
+                document.getElementById('user-name-mobile').textContent = user.displayName;
+                document.getElementById('user-email-mobile').textContent = user.email;
+                document.getElementById('user-photo-mobile').src = user.photoURL;
+            }
+
+        } else {
+            // --- USER IS LOGGED OUT ---
+            // 1. Hide Review Form
+            if(formContainer) formContainer.classList.add('hidden');
+            if(loginPrompt) loginPrompt.classList.remove('hidden');
+
+            // 2. Update Navbar
+            if(loginBtnDesktop) loginBtnDesktop.classList.remove('hidden');
+            if(userInfoDesktop) userInfoDesktop.classList.add('hidden');
+            
+            if(loginBtnMobile) loginBtnMobile.classList.remove('hidden');
+            if(userInfoMobile) userInfoMobile.classList.add('hidden');
+        }
+    });
+</script>
+
+
+    
 </body>
 </html>
 
