@@ -202,65 +202,91 @@
     
     <style>
         /* --- CUSTOM STYLES: PREMIUM DARK THEME --- */
-        
-        body {
-            /* Deep Charcoal background */
-            background-color: #314b83; 
-            color: #F3F4F6; 
-            /* Using the previously uploaded image as background */
-            /* background-image: url('uploaded:_ (16).jpeg-990c38ba-5445-4491-a6c1-9268895493d4');  */
-            background-size: cover;
-            background-position: center center;
-            background-attachment: fixed;
-        }
-        
-        .art-primary-text { color: #F9FAFB; }
-        .text-gray-600 { color: #cbd5e1 !important; /* Light blue-gray for descriptions */ }
+       /* --- CUSTOM SCROLLBAR FIX (Starts Here) --- */
+    /* This forces the scrollbar to be dark instead of the default white/blue strip */
+    ::-webkit-scrollbar {
+        width: 12px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #111827; /* Deep Charcoal (Matches Navbar) */
+        border-left: 1px solid #1f2937;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background-color: #4b5563; /* Dark Gray Handle */
+        border-radius: 6px;
+        border: 3px solid #111827; /* Border makes the handle look thinner/cleaner */
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #fbbf24; /* Turns GOLD on hover */
+    }
 
-        /* Accent Color: Luxury Gold */
-        .art-accent { background-color: #fbbf24; }
-        .art-accent-text { color: #fbbf24; }
-        .art-accent-hover:hover { background-color: #d97706; }
-        
-        .shadow-art { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3); }
-        .font-sans { font-family: 'Inter', sans-serif; }
-        
-        .section-title { position: relative; display: inline-block; }
-        .section-title::after {
-            content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: -10px;
-            width: 70px; height: 3px; background-color: #fbbf24; border-radius: 9999px;
-        }
-        
-        .navbar {
-            background-color: rgba(17, 24, 39, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #374151;
-        }
-        
-        .product-card {
-            background-color: #1F2937; border: 1px solid #374151; transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(251, 191, 36, 0.15); border-color: #fbbf24;
-        }
-        
-        /* Indicate that images are clickable */
-        .product-card img, #home img.object-cover, .featured-card img {
-            cursor: zoom-in;
-        }
-        
-        .bg-dark-alt { background-color: #385799; } /* Unified background */
-        .bg-dark-card { background-color: #1F2937; }
-
-        .sold-tag { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #991b1b; }
-        .sold-image { opacity: 0.8; filter: grayscale(100%); }
-        .available-tag { background-color: #14532d; color: #86efac; border: 1px solid #166534; }
-
-        /* Hide scrollbar */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    html {
+        scroll-behavior: smooth;
+    }
+    /* --- CUSTOM SCROLLBAR FIX (Ends Here) --- */
 
 
-        /* Notification Button styled to match your gold/dark theme */
+    /* --- YOUR EXISTING STYLES --- */
+    
+    body {
+        /* Deep Charcoal background */
+        background-color: #314b83; 
+        color: #F3F4F6; 
+        background-size: cover;
+        background-position: center center;
+        background-attachment: fixed;
+        /* Prevent horizontal scrollbar issues */
+        overflow-x: hidden; 
+        margin: 0;
+    }
+    
+    .art-primary-text { color: #F9FAFB; }
+    .text-gray-600 { color: #cbd5e1 !important; /* Light blue-gray for descriptions */ }
+
+    /* Accent Color: Luxury Gold */
+    .art-accent { background-color: #fbbf24; }
+    .art-accent-text { color: #fbbf24; }
+    .art-accent-hover:hover { background-color: #d97706; }
+    
+    .shadow-art { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3); }
+    .font-sans { font-family: 'Inter', sans-serif; }
+    
+    .section-title { position: relative; display: inline-block; }
+    .section-title::after {
+        content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: -10px;
+        width: 70px; height: 3px; background-color: #fbbf24; border-radius: 9999px;
+    }
+    
+    .navbar {
+        background-color: rgba(17, 24, 39, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #374151;
+    }
+    
+    .product-card {
+        background-color: #1F2937; border: 1px solid #374151; transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(251, 191, 36, 0.15); border-color: #fbbf24;
+    }
+    
+    /* Indicate that images are clickable */
+    .product-card img, #home img.object-cover, .featured-card img {
+        cursor: zoom-in;
+    }
+    
+    .bg-dark-alt { background-color: #385799; } /* Unified background */
+    .bg-dark-card { background-color: #1F2937; }
+
+    .sold-tag { background-color: #7f1d1d; color: #fca5a5; border: 1px solid #991b1b; }
+    .sold-image { opacity: 0.8; filter: grayscale(100%); }
+    .available-tag { background-color: #14532d; color: #86efac; border: 1px solid #166534; }
+
+    /* Hide scrollbar for internal elements only */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 
     </style>
