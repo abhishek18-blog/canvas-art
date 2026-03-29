@@ -373,3 +373,67 @@ h1, h2, h3, h4, h5, h6, p, span, a {
                 color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
                 box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Light Mode - About & Contact Section */
+.light-mode #contact {
+    background: #faf9f6 !important;
+}
+
+.light-mode .border-t { border-top-color: #e5e7eb !important; }
+
+/* Light Mode - Stats Grid Cards */
+.light-mode .grid.grid-cols-2 > div:nth-child(1),
+.light-mode .grid.grid-cols-2 > div:nth-child(3) {
+    background: linear-gradient(to bottom right, #fef3c7, #fde68a) !important;
+    border: 2px solid #f59e0b !important;
+}
+
+.light-mode .grid.grid-cols-2 > div:nth-child(2),
+.light-mode .grid.grid-cols-2 > div:nth-child(4) {
+    background: linear-gradient(to bottom right, #dbeafe, #bfdbfe) !important;
+    border: 2px solid #60a5fa !important;
+}
+
+/* Black text for 2+ and 8 */
+.light-mode .grid.grid-cols-2 > div:nth-child(1) .text-4xl,
+.light-mode .grid.grid-cols-2 > div:nth-child(3) .text-4xl {
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
+
+/* Blue text for 50+ and 100% */
+.light-mode .grid.grid-cols-2 > div:nth-child(2) .text-4xl,
+.light-mode .grid.grid-cols-2 > div:nth-child(4) .text-4xl {
+    color: #1e40af !important;
+    font-weight: 700 !important;
+}
+
+/* Labels text */
+.light-mode .grid.grid-cols-2 .text-gray-400 {
+    color: #6b7280 !important;
+    font-weight: 600 !important;
+}
+
+/* Hover effects */
+.light-mode .grid.grid-cols-2 > div:nth-child(1):hover,
+.light-mode .grid.grid-cols-2 > div:nth-child(3):hover {
+    border-color: #f59e0b !important;
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.15) !important;
+}
+
+.light-mode .grid.grid-cols-2 > div:nth-child(2):hover,
+.light-mode .grid.grid-cols-2 > div:nth-child(4):hover {
+    border-color: #60a5fa !important;
+    box-shadow: 0 8px 20px rgba(96, 165, 250, 0.15) !important;
+}
+
+.light-mode .bg-gradient-to-br[from-amber-500\/10] { background-color: #fffbf0 !important; }
+.light-mode .bg-gradient-to-br[from-blue-500\/10] { background-color: #f0f9ff !important; }
+
+.light-mode .border-amber-500\/30 { border-color: #fed7aa !important; }
+.light-mode .border-blue-500\/30 { border-color: #bfdbfe !important; }
+
+.light-mode .shadow-amber-500\/20 { box-shadow: 0 10px 30px rgba(217, 119, 6, 0.1) !important; }
+.light-mode .shadow-blue-500\/20 { box-shadow: 0 10px 30px rgba(37, 99, 235, 0.1) !important; }
+
+.light-mode .text-white { color: #111827 !important; }

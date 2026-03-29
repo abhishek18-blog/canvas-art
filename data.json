@@ -96,12 +96,6 @@
     "category": "warli"
   },
   {
-    "src": "cric.jpeg",
-    "title": "Classic Birthday",
-    "status": "available",
-    "category": "giftcards"
-  },
-  {
     "src": "bday1.jpeg",
     "title": "Celebration Vibes",
     "status": "available",
@@ -110,12 +104,6 @@
   {
     "src": "bday2.jpeg",
     "title": "Artistic Wishes",
-    "status": "available",
-    "category": "giftcards"
-  },
-  {
-    "src": "https://placehold.co/600x400/374151/fbbf24?text=Modern+Abstract",
-    "title": "Modern Abstract",
     "status": "available",
     "category": "giftcards"
   },
@@ -138,20 +126,8 @@
     "category": "frames"
   },
   {
-    "src": "",
-    "title": "Friends's Birthday Gift- Printed Collage",
-    "status": "sold",
-    "category": "sold"
-  },
-  {
     "src": "m4.jpeg",
     "title": "Threads of Pattern",
-    "status": "sold",
-    "category": "sold"
-  },
-  {
-    "src": "https://placehold.co/600x400/374151/fbbf24?text=Village+Unity+Story",
-    "title": "Village Unity Story",
     "status": "sold",
     "category": "sold"
   }
