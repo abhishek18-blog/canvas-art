@@ -1,0 +1,158 @@
+[
+  {
+    "src": "mandala2.jpeg",
+    "title": "Nature Harmony Collection",
+    "status": "available",
+    "category": "mandala"
+  },
+  {
+    "src": "mandala.jpeg",
+    "title": "Dreamcatcher Sunrise Set",
+    "status": "available",
+    "category": "mandala"
+  },
+  {
+    "src": "m3.jpeg",
+    "title": "Mandala Horizon",
+    "status": "available",
+    "category": "mandala"
+  },
+  {
+    "src": "m4.jpeg",
+    "title": "Threads of Pattern",
+    "status": "available",
+    "category": "mandala"
+  },
+  {
+    "src": "m5.jpeg",
+    "title": "Peacock Radiance",
+    "status": "available",
+    "category": "mandala"
+  },
+  {
+    "src": "m6.jpeg",
+    "title": "Mandala Geometry",
+    "status": "available",
+    "category": "mandala"
+  },
+  {
+    "src": "bot3.jpeg",
+    "title": "Dot Art Bottle Quartet",
+    "status": "available",
+    "category": "bottle"
+  },
+  {
+    "src": "bot1.jpeg",
+    "title": "Colour Dot Bottle Series",
+    "status": "available",
+    "category": "bottle"
+  },
+  {
+    "src": "bot2.jpeg",
+    "title": "Hand-Painted Mug Harmony",
+    "status": "available",
+    "category": "bottle"
+  },
+  {
+    "src": "b4.jpeg",
+    "title": "Lime Glow Dot Mandala Plate",
+    "status": "available",
+    "category": "bottle"
+  },
+  {
+    "src": "b5.jpeg",
+    "title": "Sky Blue Tribal Vases",
+    "status": "available",
+    "category": "bottle"
+  },
+  {
+    "src": "e2.jpeg",
+    "title": "Floral Bookmark Bliss",
+    "status": "available",
+    "category": "embroidery"
+  },
+  {
+    "src": "warliReady.jpeg",
+    "title": "Tribal Dance",
+    "status": "available",
+    "category": "warli"
+  },
+  {
+    "src": "w4.jpeg",
+    "title": "Harvest Festival",
+    "status": "available",
+    "category": "warli"
+  },
+  {
+    "src": "w5.jpeg",
+    "title": "Village Life",
+    "status": "available",
+    "category": "warli"
+  },
+  {
+    "src": "warlihang.jpeg",
+    "title": "Warli Wall/Door Hanger",
+    "status": "available",
+    "category": "warli"
+  },
+  {
+    "src": "cric.jpeg",
+    "title": "Classic Birthday",
+    "status": "available",
+    "category": "giftcards"
+  },
+  {
+    "src": "bday1.jpeg",
+    "title": "Celebration Vibes",
+    "status": "available",
+    "category": "giftcards"
+  },
+  {
+    "src": "bday2.jpeg",
+    "title": "Artistic Wishes",
+    "status": "available",
+    "category": "giftcards"
+  },
+  {
+    "src": "https://placehold.co/600x400/374151/fbbf24?text=Modern+Abstract",
+    "title": "Modern Abstract",
+    "status": "available",
+    "category": "giftcards"
+  },
+  {
+    "src": "hand1.jpeg",
+    "title": "Mud Mirror Art",
+    "status": "available",
+    "category": "lippan"
+  },
+  {
+    "src": "d1.jpeg",
+    "title": "Smart Memory Frame",
+    "status": "available",
+    "category": "frames"
+  },
+  {
+    "src": "wplf3.jpeg",
+    "title": "Women's WC 2025 Winning Frame",
+    "status": "available",
+    "category": "frames"
+  },
+  {
+    "src": "",
+    "title": "Friends's Birthday Gift- Printed Collage",
+    "status": "sold",
+    "category": "sold"
+  },
+  {
+    "src": "m4.jpeg",
+    "title": "Threads of Pattern",
+    "status": "sold",
+    "category": "sold"
+  },
+  {
+    "src": "https://placehold.co/600x400/374151/fbbf24?text=Village+Unity+Story",
+    "title": "Village Unity Story",
+    "status": "sold",
+    "category": "sold"
+  }
+]

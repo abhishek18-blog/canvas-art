@@ -1,0 +1,375 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* --- CUSTOM SCROLLBAR (BASE) --- */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #0d1117; 
+}
+::-webkit-scrollbar-thumb {
+    background-color: #30363d; 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: #fbbf24; 
+}
+
+/* Base Theme (Dark Mode - Original Premium Setup) */
+html {
+    scroll-behavior: smooth;
+    font-family: 'Outfit', sans-serif;
+}
+body {
+    background-color: #0d1117;
+    color: #f0f6fc;
+    background-image: radial-gradient(circle at 15% 50%, rgba(245, 158, 11, 0.05), transparent 25%),
+                      radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.03), transparent 25%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+    margin: 0;
+}
+h1, h2, h3, .section-title, .font-bold.text-4xl, .art-primary-text {
+    font-family: 'Playfair Display', serif;
+}
+.art-accent { 
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); 
+    color: #000;
+    border: none;
+}
+.art-accent-text { 
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.art-accent-hover:hover { 
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+    transform: translateY(-2px);
+}
+.shadow-art { box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5); }
+.section-title { position: relative; display: inline-block; padding-bottom: 15px;}
+.section-title::after {
+    content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: 0;
+    width: 70px; height: 3px; background: linear-gradient(90deg, #f59e0b, transparent); border-radius: 9999px;
+}
+.navbar {
+    background: rgba(13, 17, 23, 0.85); 
+    backdrop-filter: blur(16px); 
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.bg-dark-card, .product-card {
+    background-color: #161b22; 
+    border: 1px solid #30363d; 
+    border-radius: 20px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.15); 
+    border-color: rgba(245, 158, 11, 0.4);
+}
+.product-card img, #home img.object-cover, .featured-card img {
+    cursor: zoom-in;
+    transition: transform 0.7s ease;
+}
+.product-card:hover img { transform: scale(1.05); }
+
+/* Dynamic Tags */
+.sold-tag { 
+    background: rgba(239, 68, 68, 0.2); 
+    color: #f87171; 
+    border: 1px solid rgba(239, 68, 68, 0.3); 
+    backdrop-filter: blur(4px);
+}
+.sold-image { opacity: 0.8; filter: grayscale(100%); }
+.available-tag { 
+    background: rgba(16, 185, 129, 0.2); 
+    color: #34d399; 
+    border: 1px solid rgba(16, 185, 129, 0.3); 
+    backdrop-filter: blur(4px);
+}
+.bg-gradient-to-t { background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
+
+.bg-gray-700 { background-color: #374151 !important; color: white !important;}
+
+/* ==================================================== */
+/* --- LIGHT MINIMALIST BOHO THEME OVERRIDES --- */
+/* ==================================================== */
+.light-mode {
+    background-color: #faf9f6 !important; /* Warm off-white */
+    background-image: none !important;
+    color: #1f2937 !important;
+}
+
+body.light-mode::-webkit-scrollbar-track { background: #faf9f6; }
+body.light-mode::-webkit-scrollbar-thumb { background-color: #d1d5db; }
+body.light-mode::-webkit-scrollbar-thumb:hover { background-color: #bfa181; }
+
+.light-mode h1, .light-mode h2, .light-mode h3, .light-mode h4, .light-mode .section-title, .light-mode .font-bold.text-4xl, .light-mode .art-primary-text {
+    font-family: 'Cormorant Garamond', serif !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    color: #111827 !important;
+}
+.light-mode .font-sans { font-family: 'Lato', sans-serif !important;}
+
+/* Tailwind Dark Mode Strippers */
+.light-mode .bg-\[\#111827\] { background-color: transparent !important; }
+.light-mode .bg-\[\#1F2937\], .light-mode .bg-gray-800, .light-mode .bg-gray-800\/50, .light-mode .bg-dark-card, .light-mode .product-card, .light-mode #payment-modal > div { 
+    background-color: #ffffff !important; 
+    border-color: #e5e7eb !important; 
+    color: #1f2937 !important;
+}
+
+.light-mode .text-white { color: #111827 !important; }
+.light-mode .text-gray-300, .light-mode .text-gray-400 { color: #4b5563 !important; }
+.light-mode .text-gray-500 { color: #6b7280 !important; }
+.light-mode .border-gray-800, .light-mode .border-gray-700 { border-color: #e5e7eb !important; border-width: 1px !important; }
+
+/* Interactive Elements & Buttons */
+.light-mode .art-accent, .light-mode .filter-btn.bg-amber-500 { 
+    background: #bfa181 !important; /* Soft boho nude/gold */
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 4px !important; 
+    font-family: 'Lato', sans-serif !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    font-size: 0.75rem !important;
+}
+.light-mode .art-accent-text, .light-mode .text-amber-400, .light-mode .text-amber-500 { 
+    background: none !important;
+    color: #bfa181 !important;
+    -webkit-text-fill-color: #bfa181 !important;
+}
+.light-mode .art-accent-hover:hover, .light-mode .filter-btn.bg-amber-500:hover { 
+    background: #a68b6c !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(191, 161, 129, 0.3) !important;
+}
+
+/* Base Buttons */
+.light-mode .filter-btn {
+    border-radius: 4px !important;
+    background: #ffffff !important;
+    color: #4b5563 !important;
+    border: 1px solid #d1d5db !important;
+    font-family: 'Lato', sans-serif !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    font-size: 0.75rem !important;
+}
+.light-mode .filter-btn:hover {
+    border-color: #bfa181 !important;
+    color: #111827 !important;
+}
+
+/* Fix Sold Button inside Light Theme */
+.light-mode .bg-gray-700 { 
+    background-color: #f3f4f6 !important; 
+    color: #4b5563 !important; 
+    border: 1px solid #d1d5db !important; 
+    border-radius: 4px !important;
+    font-family: 'Lato', sans-serif !important;
+}
+.light-mode .bg-gray-700:hover {
+    background-color: #e5e7eb !important;
+    border-color: #9ca3af !important;
+}
+
+/* Shadows and Cards (Soft minimalist style) */
+.light-mode .shadow-art, .light-mode .shadow-lg, .light-mode .shadow-2xl { 
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05) !important; 
+}
+.light-mode .product-card {
+    border-radius: 8px !important;
+    border: 1px solid #f3f4f6 !important;
+    transition: all 0.5s ease;
+}
+.light-mode .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08) !important; 
+    border-color: #bfa181 !important;
+}
+
+/* Titles */
+.light-mode .section-title::after {
+    background: #bfa181 !important; 
+    height: 1px !important;
+    width: 40px !important;
+}
+
+/* Navbar */
+.light-mode .navbar {
+    background: rgba(255, 255, 255, 0.9) !important; 
+    backdrop-filter: blur(12px) !important; 
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Dynamic Tags */
+.light-mode .sold-tag { 
+    background: #ffffff !important; 
+    color: #dc2626 !important; 
+    border: 1px solid #fca5a5 !important; 
+    font-family: 'Lato', sans-serif !important;
+    letter-spacing: 0.1em !important;
+}
+.light-mode .available-tag { 
+    background: #ffffff !important; 
+    color: #059669 !important; 
+    border: 1px solid #6ee7b7 !important;
+    font-family: 'Lato', sans-serif !important;
+    letter-spacing: 0.1em !important;
+}
+
+/* Subdued Gradient Overlays */
+.light-mode .bg-gradient-to-t {
+    background: linear-gradient(to top, rgba(255,255,255,0.9), transparent) !important;
+}
+
+/* Light Search Input */
+.light-mode input[type="text"] {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02) !important;
+}
+.light-mode input[type="text"]:focus {
+    border-color: #bfa181 !important;
+    box-shadow: 0 0 0 2px rgba(191, 161, 129, 0.2) !important;
+}
+.light-mode input[type="text"]::placeholder {
+    color: #9ca3af !important;
+}
+
+/* Card Borders & Clean UI Enhancements */
+.product-card, .featured-card {
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.light-mode .product-card, .light-mode .featured-card {
+    border: 1px solid #e5e7eb !important;
+}
+
+/* Sold Section Enhancements */
+.light-mode #sold {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+.light-mode #sold h2, .light-mode #sold p {
+    color: #111827 !important;
+}
+
+/* ===================================== */
+/* THEME TOGGLE BUTTON - CLEAN MINIMAL */
+/* ===================================== */
+
+/* Desktop Theme Toggle Button */
+.theme-toggle-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    padding: 4px;
+    color: #f0f6fc;
+}
+
+/* Desktop theme toggle icon styling */
+.theme-toggle-btn i {
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: inline-flex;
+    color: inherit;
+    width: 20px;
+    height: 20px;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.theme-toggle-btn i.light-icon {
+    color: #fbbf24;
+}
+
+.theme-toggle-btn i.dark-icon {
+    color: #60a5fa;
+}
+
+/* Hover states - Dark mode */
+.theme-toggle-btn:hover {
+    transform: rotate(20deg);
+}
+
+.theme-toggle-btn:hover i {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Light mode toggle button */
+.light-mode .theme-toggle-btn {
+    color: #4b5563;
+}
+
+.light-mode .theme-toggle-btn i.light-icon {
+    color: #d97706;
+}
+
+.light-mode .theme-toggle-btn i.dark-icon {
+    color: #7c3aed;
+}
+
+/* Hover states - Light mode */
+.light-mode .theme-toggle-btn:hover {
+    transform: rotate(20deg);
+}
+
+/* Focus state */
+.theme-toggle-btn:focus {
+    outline: none;
+}
+
+/* Mobile menu theme toggle */
+.theme-toggle-btn.w-full {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 10px 12px;
+    background: transparent;
+    border-radius: 6px;
+    border: none;
+    gap: 12px;
+}
+
+.theme-toggle-btn.w-full:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.light-mode .theme-toggle-btn.w-full:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Smooth color transitions for entire body */
+body {
+    transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                background-image 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth transitions for text elements */
+h1, h2, h3, h4, h5, h6, p, span, a {
+    transition: color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth transitions for interactive elements */
+.navbar, .product-card, .featured-card, input, button, .bg-dark-card {
+    transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
