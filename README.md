@@ -15,7 +15,6 @@ A stunning, responsive web portfolio showcasing authentic handmade artworks. Bui
 - **Reviews System** - Customer testimonials and ratings
 - **Sold Archive** - Display of previously sold masterpieces
 - **Contact Section** - Easy way for customers to reach out
-- **Payment Integration** - Secure checkout and payment processing
 - **User Authentication** - Secure login system
 - **Dark Mode Support** - Eye-friendly interface with customizable themes
 
@@ -39,12 +38,11 @@ canvas-art/
 │
 ├── css/                      # Stylesheets
 │   ├── style.css            # Main styles
-│   └── payment.css          # Payment page styles
 │
 ├── js/                       # JavaScript files
 │   ├── ui.js                # UI interactions and components
 │   ├── auth.js              # Authentication logic
-│   └── payment.js           # Payment processing
+│   └── payment.js           # Payment QR only
 │
 └── Art Collections/         # Organized art categories
     ├── mandala/             # Mandala art collection
@@ -136,10 +134,8 @@ canvas-art/
 - Showcase successful pieces
 - Build credibility and portfolio
 
-### 7. **Contact & Payment**
+### 7. **Contact**
 - Contact form for inquiries
-- Secure payment processing
-- Order management
 
 ---
 
